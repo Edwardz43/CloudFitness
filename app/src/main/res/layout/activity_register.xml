@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A9D2D4"
+    >
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#A9D2D4"
+
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Register"
+                    android:textSize="26dp"
+                    android:textColor="#24335A"
+                    android:textAlignment="center"
+                    android:layout_weight="1"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+
+                <EditText
+                    android:id="@+id/user_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/edit_text_border"
+                    android:ems="17"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:hint="Email (Username)"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+
+                <EditText
+                    android:id="@+id/user_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="17"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:hint="Password"
+                    android:background="@drawable/edit_text_border"
+                    android:inputType="textPassword"
+                    />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+                <EditText
+                    android:id="@+id/confirm_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/edit_text_border"
+                    android:ems="17"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+                <EditText
+                    android:id="@+id/user_firstName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="17"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:hint="First Name"
+                    android:background="@drawable/edit_text_border"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+
+                <EditText
+                    android:id="@+id/user_lastName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/edit_text_border"
+                    android:ems="17"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:hint="Last Name"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                >
+                <EditText
+                    android:id="@+id/user_birthDate"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="17"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:hint="Birthdate MM/DD/YYYY"
+                    android:background="@drawable/edit_text_border"
+                    />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
+                >
+                <Button
+                    android:id="@+id/male"
+                    android:onClick="setMale"
+                    android:textAllCaps="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/male"
+                    android:layout_weight="1"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="10dp"
+                    />
+                <Button
+                    android:id="@+id/female"
+                    android:onClick="setFemale"
+                    android:textAllCaps="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Female"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="30dp"
+
+                    />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="5dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_weight="1"
+                    android:text="Physical Information"
+                    android:textAlignment="center"
+                    android:textColor="#2782DC"
+                    android:textSize="18dp"
+                    />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal"
+                >
+                <Button
+                    android:id="@+id/imperial_btn"
+                    android:onClick="setImperialUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:text="imperial"
+                    android:layout_weight="1"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="10dp"
+                    />
+                <Button
+                    android:id="@+id/metric_btn"
+                    android:onClick="setMetricUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:text="Metric"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="30dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/imperialUnitLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="10dp"
+                >
+                <EditText
+                    android:id="@+id/height_ft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Height (ft)"
+                    android:background="@drawable/edit_text_border"
+                    android:layout_weight="1"
+                    android:layout_marginStart="30dp"
+                    />
+                <EditText
+                    android:id="@+id/height_in"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint=" (in)"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_border"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    />
+                <EditText
+                    android:id="@+id/weight_lb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="weight (lbs)"
+                    android:background="@drawable/edit_text_border"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="30dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/metricUnitLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="10dp"
+                >
+                <EditText
+                    android:id="@+id/height_cm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Height (cm)"
+                    android:background="@drawable/edit_text_border"
+                    android:layout_weight="1"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="10dp"
+                    />
+                <EditText
+                    android:id="@+id/weight_kg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="weight (kg)"
+                    android:background="@drawable/edit_text_border"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="30dp"
+                    />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                >
+                <Spinner
+                    android:prompt="@string/activity_level"
+                    android:id="@+id/activity_level"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    >
+                </Spinner>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                >
+
+                <CheckBox
+                    android:id="@+id/checkBox2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/terms"
+                    android:layout_alignBottom="@+id/terms"
+                    android:layout_toStartOf="@+id/terms" />
+
+                <TextView
+                    android:id="@+id/terms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="Accept Terms Conditions"
+                    android:textColor="#000" />
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                >
+                <Button
+                    android:onClick="back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:text="Back"
+                    android:textColor="#fff"
+                    android:background="@drawable/border_deepblue_buttons"
+                    android:layout_weight="1"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="10dp"
+                    />
+                <Button
+                    android:onClick="register"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:text="Register"
+                    android:textColor="#fff"
+                    android:background="@drawable/border_lightgreen_buttons"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="30dp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>

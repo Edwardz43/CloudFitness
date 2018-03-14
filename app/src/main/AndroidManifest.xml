@@ -16,6 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".LastWeightActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".MyProfileActivity" />
+        <activity android:name=".ResultActivity" />
+        <activity android:name=".GraphActivity" />
+        <activity android:name=".HistoricalDataActivity" />
+        <activity android:name=".ErrorActivity"></activity>
     </application>
 
 </manifest>

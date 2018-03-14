@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">CloudFitness</string>
+    <string name="app_name">BLE_Weight_Scale</string>
+    <string name="facebook_app_id">195297047880502</string>
+    <string name="fb_login_protocol_scheme">fb195297047880502</string>
+    <string name="activity_level">Activity Level</string>
+    <string name="gender_male">male</string>
+    <string name="gender_female">female</string>
+    <string name="hist_title">Historical Data</string>
+    <string name="hist_sub_title">(Past 12 Months)</string>
+    <string name="btn_back">Back</string>
+    <string name="stand_on_scale">Please stand on the scale</string>
+    <string name="leave_scale">Please leave the scale</string>
+    <string-array name="activity_level_array">
+        <item>Activity Level</item>
+        <item>Low (0-1 workouts/week)</item>
+        <item>Medium (2-4 workouts/week)</item>
+        <item>High (>5 workouts/week)</item>
+    </string-array>
+    <string name="ble_not_supported">Your Device Do Not Support Bluetooth !</string>
 </resources>

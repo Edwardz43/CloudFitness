@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="ACTIVITY_LOW" >1</integer>
+    <integer name="ACTIVITY_MEDIUM" >2</integer>
+    <integer name="ACTIVITY_HIGH" >3</integer>
+    <integer name="IMPERIAL" >0</integer>
+    <integer name="METRIC" >1</integer>
+    <integer name="CONNECTION_SUCCESS" >1</integer>
+    <integer name="CONNECTION_DEVICE_NOT_FOUND" >2</integer>
+    <integer name="CONNECTION_LOST" >3</integer>
+    <integer name="gender_male">0</integer>
+    <integer name="gender_female">1</integer>
+</resources>
