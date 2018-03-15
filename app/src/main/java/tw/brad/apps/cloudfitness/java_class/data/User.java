@@ -159,9 +159,9 @@ public class User implements Serializable {
         this.activity_level = activity_level;
     }
 
+    // CRUD : 新增User
     public boolean insert(SQLiteDatabase db){
         ContentValues values = new ContentValues();
-        values.put("_id",this.id);
         values.put("email",this.email);
         values.put("password",this.password);
         values.put("first_name",this.fisrtname);
@@ -176,13 +176,13 @@ public class User implements Serializable {
         values.put("unit_type",this.unit_type);
         values.put("activity_level",this.activity_level);
         values.put("fb_id",this.fb_id);
-        this.id = db.insert("users", null, values);
+        this.setId(db.insert("users", null, values));
         return this.id > 0;
     }
 
+    // CRUD : 更新User
     public boolean update(SQLiteDatabase db){
         ContentValues values = new ContentValues();
-        values.put("_id",this.id);
         values.put("email",this.email);
         values.put("password",this.password);
         values.put("first_name",this.fisrtname);
@@ -198,27 +198,33 @@ public class User implements Serializable {
         values.put("activity_level",this.activity_level);
         values.put("fb_id",this.fb_id);
 
-        return db.update("users", values, "_id",new String[] {""+this.id}) > 0 ;
+        return db.update("users", values, "_id=?",new String[] {""+this.id}) > 0 ;
     }
 
-    public void query(String email, SQLiteDatabase db){
+    // CRUD : 查詢User  若有查到 就回傳User物件 否則回傳空值
+    public static User query(String email, SQLiteDatabase db){
         Cursor cursor = db.query("users", null, "email='" + email+"'", null, null, null, null);
+        User user = new User();
         while (cursor.moveToNext()){
-            this.id = cursor.getLong(cursor.getColumnIndex("_id"));
-            this.email = cursor.getString(cursor.getColumnIndex("email"));
-            this.password = cursor.getString(cursor.getColumnIndex("password"));
-            this.fisrtname = cursor.getString(cursor.getColumnIndex("first_name"));
-            this.lastname = cursor.getString(cursor.getColumnIndex("last_name"));
-            this.birthdate = cursor.getString(cursor.getColumnIndex("birth_date"));
-            this.height_ft = cursor.getString(cursor.getColumnIndex("height_ft"));
-            this.height_in = cursor.getString(cursor.getColumnIndex("height_in"));
-            this.height_cm = cursor.getString(cursor.getColumnIndex("height_cm"));
-            this.weight_lb = cursor.getString(cursor.getColumnIndex("weight_lb"));
-            this.weight_kg = cursor.getString(cursor.getColumnIndex("weight_kg"));
-            this.gender = cursor.getString(cursor.getColumnIndex("gender"));
-            this.unit_type = cursor.getInt(cursor.getColumnIndex("unit_type"));
-            this.activity_level = cursor.getInt(cursor.getColumnIndex("activity_level"));
-            this.fb_id = cursor.getLong(cursor.getColumnIndex("fb_id"));
+            user.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+            user.setEmail(cursor.getString(cursor.getColumnIndex("email")));
+            user.setPassword(cursor.getString(cursor.getColumnIndex("password")));
+            user.setFisrtname(cursor.getString(cursor.getColumnIndex("first_name")));
+            user.setLastname(cursor.getString(cursor.getColumnIndex("last_name")));
+            user.setBirthdate(cursor.getString(cursor.getColumnIndex("birth_date")));
+            user.setHeight_ft(cursor.getString(cursor.getColumnIndex("height_ft")));
+            user.setHeight_in(cursor.getString(cursor.getColumnIndex("height_in")));
+            user.setHeight_cm(cursor.getString(cursor.getColumnIndex("height_cm")));
+            user.setWeight_lb(cursor.getString(cursor.getColumnIndex("weight_lb")));
+            user.setWeight_kg(cursor.getString(cursor.getColumnIndex("weight_kg")));
+            user.setGender(cursor.getString(cursor.getColumnIndex("gender")));
+            user.setUnit_type(cursor.getInt(cursor.getColumnIndex("unit_type")));
+            user.setActivity_level(cursor.getInt(cursor.getColumnIndex("activity_level")));
+            user.setFb_id(cursor.getLong(cursor.getColumnIndex("fb_id")));
+            return user;
         }
+        return null;
     }
+
+
 }

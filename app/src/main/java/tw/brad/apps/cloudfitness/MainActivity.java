@@ -14,24 +14,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
-import com.facebook.login.LoginManager;
-import com.google.gson.Gson;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
 import tw.brad.apps.cloudfitness.java_class.data.User;
 
@@ -43,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
     // DB相關物件
     private MyDBHelper dbHelper;
     private SQLiteDatabase db;
-    // 使用者物件
-    private User user;
 
 
     @Override
@@ -57,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         // 請求權限
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            Log.d("ed43","no permission");
+            //Log.d("ed43","no permission");
             ActivityCompat.requestPermissions(this,
                     new String[] {
                     // 如果缺少權限  就先動態向使用者請求
@@ -78,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
         // 取權限的callback
         if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             // 如果取得正確的權限  才初始化
-            Log.d("ed43", "ok");
+            //Log.d("ed43", "ok");
             init();
         }else {
             // 權限取得失敗
-            Log.d("ed43", "xx");
+            //Log.d("ed43", "xx");
             finish();
         }
     }
@@ -97,23 +81,16 @@ public class MainActivity extends AppCompatActivity {
         // 從 sharedPreferences 中取得 reMemberMe 的值  如果沒有 就預設 false
         boolean reMemberMe = sharedPref.getBoolean("rememberMe", false);
         if(reMemberMe){
-            Log.d("ed43", "remember me");
+            //Log.d("ed43", "remember me");
         }
     }
 
     //登入
     public void signIn(View view){
-        // 初始化 使用者
-        user = new User();
         EditText login_email = (EditText) findViewById(R.id.login_email);
         EditText login_password = (EditText) findViewById(R.id.login_password);
         String email = login_email.getText().toString();
         String password = login_password.getText().toString();
-
-        if (email != null){
-            user.query(email, db);
-            Log.d("ed43", "user : " + new Gson().toJson(user));
-        }
 
         //核對 email & password
         if(email.length() > 0 && password.length() > 0){
@@ -121,8 +98,9 @@ public class MainActivity extends AppCompatActivity {
             if(confirm_user(email, password)){
                 //Log.i("ed43", "Login Email : " + email);
                 Intent signInIntent = new Intent(this, LastWeightActivity.class);
-                signInIntent.putExtra("user", user);
+                signInIntent.putExtra("email", email);
                 startActivity(signInIntent);
+                finish();
             }else{
                 Toast.makeText(this, "Incorrect Email or Password", Toast.LENGTH_SHORT).show();
             }
@@ -137,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
     public void register(View view){
         Intent registerIntent = new Intent(this, RegisterActivity.class);
         startActivity(registerIntent);
+        finish();
     }
 
     //記住我
@@ -149,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("rememberMe",checked);
         editor.commit();
 
-        Log.i("ed43", "IsChecked : " + checked);
+        //Log.i("ed43", "IsChecked : " + checked);
     }
 
     //fb登入
@@ -157,24 +136,24 @@ public class MainActivity extends AppCompatActivity {
         Log.i("ed43", "fb_login");
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d("ed43", "Destroy");
-        super.onDestroy();
-        // 將app的程序清除掉
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(0);
-    }
+//    @Override
+//    public void onDestroy() {
+//        Log.d("ed43", "Destroy");
+//        super.onDestroy();
+//        // 將app的程序清除掉
+//        android.os.Process.killProcess(android.os.Process.myPid());
+//        System.exit(0);
+//    }
 
     // 改寫按下返回鍵 離開app
     @Override
-    public void finish() {
+    public void onBackPressed() {
         //第一次按下返回鍵 會先觸發一次finish() 取得按下返回鍵的時間
         long now = System.currentTimeMillis();
 
         // 兩次按下返回鍵的間隔時間 < 3秒  就離開app
         if(now - last <= 3 * 1000){
-            super.finish();
+            finish();
         }else {
             // 第一次按下返回鍵  now - last 一定會 > 3 * 1000
             last = now;
@@ -192,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
 
     //驗證User
     private boolean confirm_user(String email, String password){
-        User confirm_user = new User();
-        confirm_user.query(email, db);
-        if(confirm_user.getEmail() != null){
+        // 用使用者輸入的帳號密碼到資料庫檢查
+        User confirm_user = User.query(email, db);
+        if(confirm_user != null){
             String user_password = confirm_user.getPassword();
             if(user_password.equals(password)){
                 //Log.d("USER_TEST", "OOOOOOO");

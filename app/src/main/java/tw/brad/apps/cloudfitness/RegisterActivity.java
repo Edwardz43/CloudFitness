@@ -93,21 +93,21 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
     // 設定單位按鈕 : 英制
     public void setImperialUnit(View view){
-        Log.d("ed43", "setImperialUnit");
+        //Log.d("ed43", "setImperialUnit");
         this.unit_type = IMPERIAL;
         setUnit();
     }
 
     // 設定單位按鈕 : 公制
     public void setMetricUnit(View view){
-        Log.d("ed43", "setMetricUnit");
+        //Log.d("ed43", "setMetricUnit");
         this.unit_type = METRIC;
         setUnit();
     }
 
     // 設置單位 : 英制/公制 英制的欄位有 呎 吋 體重  公制的只有 公分 公斤
     private void setUnit(){
-        Log.d("ed43", "setUnit()");
+        //Log.d("ed43", "setUnit()");
         imperial = findViewById(R.id.imperial_btn);
         metric = findViewById(R.id.metric_btn);
         // 先取得英制/公制欄位的layout
@@ -116,13 +116,13 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
         // 切換顯示欄位  被選到的會 VISIBLE  沒被選到的會 GONE
         if(this.unit_type == IMPERIAL){
-            Log.d("ed43", "IMPERIAL");
+            //Log.d("ed43", "IMPERIAL");
             unitImperialLayout.setVisibility(View.VISIBLE);
             unitMetricLayout.setVisibility(View.GONE);
             imperial.setBackgroundResource(R.color.colorSelectedButton);
             metric.setBackgroundResource(R.color.colorUnselectedButton);
         }else if(this.unit_type == METRIC){
-            Log.d("ed43", "METRIC");
+            //Log.d("ed43", "METRIC");
             unitImperialLayout.setVisibility(View.GONE);
             unitMetricLayout.setVisibility(View.VISIBLE);
             metric.setBackgroundResource(R.color.colorSelectedButton);
@@ -132,6 +132,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
     // 按下 back按鍵 回到首頁
     public void back(View view){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
         finish();
     }
 
@@ -173,10 +175,10 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         user.setUnit_type(this.unit_type);
         user.setActivity_level(this.activity_level);
         user.insert(db);
-
-        Log.i("DBTest", "Register : "+new Gson().toJson(user));
-
-        Intent it = new Intent(this, MainActivity.class);
+        //Log.i("DBTest", "Register : "+new Gson().toJson(user));
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("user", user);
+        startActivity(intent);
         finish();
     }
 
