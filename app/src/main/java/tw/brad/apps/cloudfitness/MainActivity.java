@@ -33,9 +33,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
-    private static Boolean isExit = false;
-    private static Boolean hasTask = false;
+    // 使用者偏好 SharedPreferences
     private SharedPreferences sharedPref;
+    // 紀錄時間 與離開app相關
     private long last = 0;
 
     @Override
@@ -44,16 +44,20 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide(); //隱藏標題
         setContentView(R.layout.activity_main);
 
-        // request Permission
+        // 請求權限
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             Log.d("ed43","no permission");
             ActivityCompat.requestPermissions(this,
                     new String[] {
+                    // 如果缺少權限  就先動態向使用者請求
+                            // 權限 : 取得模糊位置
                             Manifest.permission.ACCESS_COARSE_LOCATION,
+                            // 權限 : 取得精確位置
                             Manifest.permission.ACCESS_FINE_LOCATION
                     },1 );
         }else {
+            // 如果有權限  就開始APP初始化
             init();
         }
     }
@@ -61,10 +65,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // 取權限的callback
         if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            // 如果取得正確的權限  才初始化
             Log.d("ed43", "ok");
             init();
         }else {
+            // 權限取得失敗  
             Log.d("ed43", "xx");
             finish();
         }
