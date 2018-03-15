@@ -24,24 +24,33 @@ public class ResultActivity extends AppCompatActivity {
     private AlertDialog.Builder dialog_list;
     private String deviceMAC, unit_type;
     private TextView bmi, fat, water, muscle, bone, v_fat, weight, weight_unit;
-    private double[] forRecordItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide(); //隱藏標題
+        //隱藏標題
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_result);
         init();
     }
 
+    // 初始化
     private void init() {
+        // 對話框顯示 : 否
         isDialogShow = false;
+
+        // 資料更新 : 否
         isDataUpdated = false;
+
+        // 搜索到的設備列表
         device_List = new ArrayList();
+
+        // 對話框
         dialog_list = new AlertDialog.Builder(this);
 
 
-        // init TextView
+        // TextView 初始化
         bmi = findViewById(R.id.bmi);
         fat = findViewById(R.id.body_fat);
         water = findViewById(R.id.body_water);
@@ -61,13 +70,15 @@ public class ResultActivity extends AppCompatActivity {
         weight_unit.setText(unit_type);
     }
 
+    // 按下save按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void save(View view){
         Log.d("ed43", "save");
-        Intent intent = new Intent(this, LastWeightActivity.class);
-        startActivity(intent);
+        finish();
     }
 
+    // 按下discard按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void discard(View view){
-        ResultActivity.this.finish();
+        Log.d("ed43", "discord");
+        finish();
     }
 }

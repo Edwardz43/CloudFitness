@@ -54,22 +54,33 @@ public class GraphActivity extends AppCompatActivity {
         init();
     }
 
+    // 初始化
     private void init() {
+
+        // 綁定按鍵
         btnDay = findViewById(R.id.btn_day);
         btnWeek = findViewById(R.id.btn_week);
         btnMonth = findViewById(R.id.btn_month);
         btnYear = findViewById(R.id.btn_year);
         buttonList = new ArrayList<>();
+
+        // 將按鍵加進 list裡
         buttonList.add(btnDay);
         buttonList.add(btnWeek);
         buttonList.add(btnMonth);
         buttonList.add(btnYear);
+
+        // 預設顯示 : 日資料
         mType = DAY;
+
+        // 初始化圖表
         initChart();
     }
 
     private void initChart() {
         float minYAxisValue;
+
+        // 根據按鈕來決定資料呈現 : 日 周 月 年
         switch (mType){
             case DAY:
                 mSelectedType = mDay;
@@ -156,10 +167,12 @@ public class GraphActivity extends AppCompatActivity {
         rightAxis.setDrawGridLines(false);
         rightAxis.setAxisMinimum(minYAxisValue); // this replaces setStartAtZero(true)
 
+        //設定縱軸
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setDrawGridLines(false);
         leftAxis.setAxisMinimum(minYAxisValue); // this replaces setStartAtZero(true)
 
+        //設定橫軸
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTypeface(mTfLight);
@@ -167,7 +180,6 @@ public class GraphActivity extends AppCompatActivity {
         xAxis.setAxisMinimum(0f);
         xAxis.setGranularity(1f);
         xAxis.setLabelCount(itemcount);
-        //設定橫軸
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -247,6 +259,7 @@ public class GraphActivity extends AppCompatActivity {
         return (float) (Math.random() * range) + startsfrom;
     }
 
+    // 按鈕 : 日資料
     public void show_day(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);
@@ -257,6 +270,8 @@ public class GraphActivity extends AppCompatActivity {
         mType = DAY;
         initChart();
     }
+
+    // 按鈕 : 日資料
     public void show_week(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);
@@ -267,6 +282,8 @@ public class GraphActivity extends AppCompatActivity {
         mType = WEEK;
         initChart();
     }
+
+    // 按鈕 : 日資料
     public void show_month(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);
@@ -277,6 +294,8 @@ public class GraphActivity extends AppCompatActivity {
         mType = MONTH;
         initChart();
     }
+
+    // 按鈕 : 日資料
     public void show_year(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);
@@ -288,13 +307,16 @@ public class GraphActivity extends AppCompatActivity {
         initChart();
     }
 
+    // 按下返回鍵 : 回到 LastWeightActivity
     public void back(View view){
-        Intent it = new Intent(this, LastWeightActivity.class);
-        startActivity(it);
+        finish();
     }
 
+
+    // 設定Y軸顯示的最小值
     private float setMinYAxisValue(double[] mData){
         //TODO
+        //排序後 取出最小值  目前暫時回傳0
         return 0f;
     }
 }

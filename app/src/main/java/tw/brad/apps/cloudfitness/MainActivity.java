@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide(); //隱藏標題
+        //隱藏標題
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
         // 請求權限
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("ed43", "ok");
             init();
         }else {
-            // 權限取得失敗  
+            // 權限取得失敗
             Log.d("ed43", "xx");
             finish();
         }

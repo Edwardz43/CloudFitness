@@ -24,9 +24,10 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
     private Button male, female, imperial, metric;
     private EditText email, firstname, lastname, birthdate, height_ft, height_in, height_cm;
     private Integer activity_level;
-    private Resources res;
-    private boolean isFBNewLogin;
     private Spinner spinner;
+    // 正規化 : 驗證email
+    private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
 
     @Override
@@ -37,9 +38,9 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
         init();
     }
 
+    // 初始化 將使用者的基本資料寫入到UI
     private void init() {
-        isFBNewLogin = false;
-        res = getResources();
+        // 初始化所有的 EditText
         email = findViewById(R.id.profile_email);
         firstname = findViewById(R.id.profile_firstName);
         lastname = findViewById(R.id.profile_lastName);
@@ -48,47 +49,65 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
         height_in = findViewById(R.id.profile_height_in);
         height_cm = findViewById(R.id.profile_height_cm);
 
+        //預設性別 : 男性
+        isMale = true;
+        setGender();
+        //預設單位 : 英制
+        isImperial = true;
+        setUnit();
 
+        //初始化下拉選單
         init_spinner();
     }
 
+    // 設置性別按鈕 : 男性
     public void setMale(View view){
         isMale = true;
-        setSex();
+        setGender();
     }
 
+    // 設置性別按鈕 : 女性
     public void setFemale(View view){
         isMale = false;
-        setSex();
+        setGender();
     }
 
-    private void setSex(){
+    // 將性別按鈕的結果記錄下來 被選的按鈕會變色
+    private void setGender(){
         male = findViewById(R.id.profile_male);
         female = findViewById(R.id.profile_female);
         if(isMale){
+            // 男性按鈕變深  女性按鈕變淺
             male.setBackgroundResource(R.color.colorSelectedButton);
             female.setBackgroundResource(R.color.colorUnselectedButton);
         }else {
+            // 男性按鈕變淺  女性按鈕變深
             female.setBackgroundResource(R.color.colorSelectedButton);
             male.setBackgroundResource(R.color.colorUnselectedButton);
         }
     }
 
+    // 設定單位按鈕 : 英制
     public void setImperialUnit(View view){
         isImperial = true;
         setUnit();
     }
 
+    // 設定單位按鈕 : 公制
     public void setMetricUnit(View view){
         isImperial = false;
         setUnit();
     }
 
+    // 設置單位 : 英制/公制 英制的欄位有 呎 吋 體重  公制的只有 公分 公斤
     private void setUnit(){
         imperial = findViewById(R.id.profile_imperial_btn);
         metric = findViewById(R.id.profile_metric_btn);
+        // 先取得英制/公制欄位的layout
         LinearLayout unitImperialLayout = findViewById(R.id.imperialUnitLayout);
         LinearLayout unitMetricLayout = findViewById(R.id.metricUnitLayout);
+
+        // 切換顯示欄位  被選到的會 VISIBLE  沒被選到的會 GONE
         if(isImperial){
             unitImperialLayout.setVisibility(View.VISIBLE);
             unitMetricLayout.setVisibility(View.GONE);
@@ -102,14 +121,17 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
         }
     }
 
+    // 按下 back按鍵 回到首頁
     public void back(View view){
-        MyProfileActivity.this.finish();
+        finish();
     }
 
+    // 按下save按鍵  更新使用者資料 並返回首頁
     public void save(View view){
-        MyProfileActivity.this.finish();
+        finish();
     }
 
+    // 下拉式選單(spinner)初始化
     private void init_spinner(){
         spinner = findViewById(R.id.profile_activity_level);
         String[] optiopns = {
@@ -118,14 +140,12 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
                 "Medium (2-4 workouts/week)",
                 "High (>5 workouts/week)"
         };
-        // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(
                 this, android.R.layout.simple_spinner_item, optiopns){
             @Override
             public boolean isEnabled(int position){
                 if(position == 0) {
-                    // Disable the first item from Spinner
-                    // First item will be use for hint
+                    // 將第一個選項設置為不能點選 當作提示選項
                     return false;
                 }
                 else
@@ -133,59 +153,39 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
                     return true;
                 }
             }
-
-//            @Override
-//            public View getDropDownView(
-//                    int position, View convertView, ViewGroup parent) {
-//                View view = super.getDropDownView(position, convertView, parent);
-//                TextView tv = (TextView) view;
-//                if(position == 0){
-//                    // Set the hint text color gray
-//                    tv.setTextColor(Color.GRAY);
-//                }
-//                else {
-//                    tv.setTextColor(Color.BLACK);
-//                }
-//                return view;
-//            }
         };
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
     }
 
+    // 下拉式選單 : 當下拉項目被點選
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
-        Log.i("ble_weight_scale", "spinner select item : " + position);
-        String selectedItemText = (String) parent.getItemAtPosition(position);
-        // If user change the default selection
-        // First item is disable and it is used for hint
+        Log.i("ed43", "spinner select item : " + position);
         if (position > 0) {
-            // Notify the selected item text
+            // 如果點選的選項不是第一個提示選項  就記錄下使用者的選擇
             this.activity_level = position;
-            //Toast.makeText(getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT).show();
         }
     }
 
+    // 下拉式選單 : 沒有點選任何項目
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
+        // 甚麼都不做
     }
 
+    // 改寫返回鍵 : 執行finish() 會回到首頁
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
     }
 
-    //驗證email by regex
-    private static final Pattern VALID_EMAIL_ADDRESS_REGEX =
-            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-
+    // 驗證 email 格式
     private static boolean validate(String emailStr) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX .matcher(emailStr);
+        // 回傳布林值 : 是否符合格式
         return matcher.find();
     }
 }
