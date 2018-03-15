@@ -271,7 +271,7 @@ public class GraphActivity extends AppCompatActivity {
         initChart();
     }
 
-    // 按鈕 : 日資料
+    // 按鈕 : 周資料
     public void show_week(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);
@@ -283,7 +283,7 @@ public class GraphActivity extends AppCompatActivity {
         initChart();
     }
 
-    // 按鈕 : 日資料
+    // 按鈕 : 月資料
     public void show_month(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);
@@ -295,7 +295,7 @@ public class GraphActivity extends AppCompatActivity {
         initChart();
     }
 
-    // 按鈕 : 日資料
+    // 按鈕 : 年資料
     public void show_year(View view){
         for (Button btn: buttonList) {
             btn.setBackgroundResource(R.drawable.border_pinkblue_buttons);

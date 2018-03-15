@@ -23,6 +23,8 @@
         <activity android:name=".GraphActivity" />
         <activity android:name=".HistoricalDataActivity" />
         <activity android:name=".ErrorActivity"></activity>
+        <service android:name=".java_class.BLEService"/>
+        <receiver android:name=".java_class.MyBroadcastReceiver"/>
     </application>
 
 </manifest>
