@@ -284,8 +284,8 @@ public class ResultActivity extends AppCompatActivity {
         Log.d("ed43", "Result : onDestroy");
         super.onDestroy();
         unregisterReceiver(receiver);
+        disConnect();
         Intent intent = new Intent(this, BLEService.class);
         stopService(intent);
-        disConnect();
     }
 }

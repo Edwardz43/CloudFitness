@@ -87,7 +87,7 @@ public class BLEService extends Service{
         mBluetoothStateListener = new BluetoothStateListener() {
             @Override
             public void onBluetoothStateChanged(boolean openOrClosed) {
-                if(openOrClosed){
+                if(openOrClosed && !isBluetoothOpen){
                     //偵測到藍芽開啟 發放廣播
                     isBluetoothOpen = true;
                     Log.d("ed43", "BLE:openOrClosed: " + openOrClosed);
@@ -128,9 +128,14 @@ public class BLEService extends Service{
                     disconnect();
                     break;
             }
+        }else {
+            Log.d("ed43", "stop self");
+            stopSelf();
         }
-        // START_NOT_STICKY : 使用这个返回值时，如果在执行完onStartCommand后，服务被异常kill掉，系统不会自动重启该服务。
         return START_NOT_STICKY;
+
+        // START_NOT_STICKY : 使用这个返回值时，如果在执行完onStartCommand后，服务被异常kill掉，系统不会自动重启该服务。
+        //return START_NOT_STICKY;
     }
 
     // 搜索
@@ -372,8 +377,7 @@ public class BLEService extends Service{
     // 停止服務
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        //Log.d("ed43", "service onDestroy");
+        Log.d("ed43", "service onDestroy");
         disconnect();
         stopSelf();
     }
