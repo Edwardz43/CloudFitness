@@ -25,6 +25,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private String email, password, confirmPassword, firstname, lastName,
             birthdate, gender, height_in, height_ft, height_cm, weight_lb, weight_kg;
     private Integer unit_type, activity_level;
+    private final Integer IMPERIAL = 0;
+    private final Integer METRIC = 0;
     private Resources res;
 
     @Override
@@ -35,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         init();
     }
 
+    //初始化
     private void init() {
         res = getResources();
 
@@ -52,39 +55,42 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         init_spinner();
     }
 
+    // 設置性別按鈕 : 男性
     public void setMale(View view){
-        isMale = true;
         this.gender = "male";
         setSex();
     }
 
+    // 設置性別按鈕 : 女性
     public void setFemale(View view){
-        isMale = false;
         this.gender = "female";
         setSex();
     }
 
+    // 將性別按鈕的結果記錄下來 被選的按鈕會變色
     private void setSex(){
         male = findViewById(R.id.male);
         female = findViewById(R.id.female);
-        if(isMale){
+        if(this.gender.equals("male")){
+            // 男性按鈕變深  女性按鈕變淺
             male.setBackgroundResource(R.color.colorSelectedButton);
             female.setBackgroundResource(R.color.colorUnselectedButton);
-        }else {
+        }else if (this.gender.equals("female")){
+            // 男性按鈕變淺  女性按鈕變深
             female.setBackgroundResource(R.color.colorSelectedButton);
             male.setBackgroundResource(R.color.colorUnselectedButton);
         }
     }
 
+    // 設定單位按鈕 : 公制
     public void setImperialUnit(View view){
-        isImperial = true;
-        this.unit_type = res.getInteger(R.integer.IMPERIAL);
+        this.unit_type = IMPERIAL;
         setUnit();
     }
 
+    // 設定單位按鈕 : 公制
     public void setMetricUnit(View view){
-        isImperial = false;
-        this.unit_type = res.getInteger(R.integer.METRIC);
+        this.unit_type = METRIC;
         setUnit();
     }
 
@@ -93,12 +99,12 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         metric = findViewById(R.id.metric_btn);
         LinearLayout unitImperialLayout = findViewById(R.id.imperialUnitLayout);
         LinearLayout unitMetricLayout = findViewById(R.id.metricUnitLayout);
-        if(isImperial){
+        if(this.unit_type == IMPERIAL){
             unitImperialLayout.setVisibility(View.VISIBLE);
             unitMetricLayout.setVisibility(View.GONE);
             imperial.setBackgroundResource(R.color.colorSelectedButton);
             metric.setBackgroundResource(R.color.colorUnselectedButton);
-        }else {
+        }else if(this.unit_type == METRIC){
             unitImperialLayout.setVisibility(View.GONE);
             unitMetricLayout.setVisibility(View.VISIBLE);
             metric.setBackgroundResource(R.color.colorSelectedButton);

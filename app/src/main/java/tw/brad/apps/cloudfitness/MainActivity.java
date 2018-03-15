@@ -35,9 +35,8 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
     private static Boolean isExit = false;
     private static Boolean hasTask = false;
-    private Timer timerExit;
-    private TimerTask task;
     private SharedPreferences sharedPref;
+    private long last = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,32 +70,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 初始化
     private void init() {
-
+        // 取得 sharedPreferences
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        // 從 sharedPreferences 中取得 reMemberMe 的值  如果沒有 就預設 false
         boolean reMemberMe = sharedPref.getBoolean("rememberMe", false);
         if(reMemberMe){
             Log.d("ed43", "remember me");
         }
-        //init
-
-        //testInsert();
-        //init exit app
-        timerExit = new Timer();
-        task = new TimerTask() {
-            @Override
-            public void run() {
-                isExit = false;
-                hasTask = true;
-            }
-        };
-
     }
-
 
     //登入
     public void signIn(View view){
-        //Log.i("ed43", "signIn");
         Intent signInIntent = new Intent(this, LastWeightActivity.class);
         startActivity(signInIntent);
     }
@@ -112,8 +98,11 @@ public class MainActivity extends AppCompatActivity {
         CheckBox rememberCheckBox = (CheckBox) view;
         boolean checked = rememberCheckBox.isChecked();
         SharedPreferences.Editor editor = sharedPref.edit();
+
+        // 將checkbox  結果記錄在SharedPreferences
         editor.putBoolean("rememberMe",checked);
         editor.commit();
+
         Log.i("ed43", "IsChecked : " + checked);
     }
 
@@ -126,36 +115,29 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         Log.d("ed43", "Destroy");
         super.onDestroy();
+        // 將app的程序清除掉
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(0);
     }
 
-    //離開app
+    // 改寫按下返回鍵 離開app
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // 判斷是否按下Back
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            // 是否要退出
-            if(isExit == false ) {
-                isExit = true;
-                Log.d("ed43", "Stay");
-                Toast.makeText(this, "Press Back again to exit", Toast.LENGTH_SHORT).show();
-                if(!hasTask) {
-                    this.timerExit.schedule(task, 2000);
-                }
-            } else {
-                Log.d("ed43", "Leave");
-                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                homeIntent.addCategory(Intent.CATEGORY_HOME );
-                homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(homeIntent);
-                finish();
-            }
+    public void finish() {
+        //第一次按下返回鍵 會先觸發一次finish() 取得按下返回鍵的時間
+        long now = System.currentTimeMillis();
+
+        // 兩次按下返回鍵的間隔時間 < 3秒  就離開app
+        if(now - last <= 3 * 1000){
+            super.finish();
+        }else {
+            // 第一次按下返回鍵  now - last 一定會 > 3 * 1000
+            last = now;
+            Toast.makeText(this,"Click Back one more to exit",Toast.LENGTH_SHORT).show();
         }
-        return false;
+
     }
 
-    //忘記密碼
+    //忘記密碼 會開啟cloudfitness的網頁超連結
     public void forgot_password(View view){
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("http://mycloudfitness.com/forgetpassword/"));
