@@ -28,7 +28,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         // 接收訊息 : 藍芽開啟
         boolean isBluetoothOpen = intent.getBooleanExtra("isBluetoothOpen",false);
         if(isBluetoothOpen){
-            Log.d("ed43", "BLE:receiver: search()");
+            //Log.d("ed43", "BLE:receiver: search()");
             // 啟動 連結
             activity.search();
         }

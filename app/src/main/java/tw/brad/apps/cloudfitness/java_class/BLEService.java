@@ -58,7 +58,7 @@ public class BLEService extends Service{
 
     @Override
     public void onCreate() {
-        Log.d("ed43", "service onCreate");
+        //Log.d("ed43", "service onCreate");
         super.onCreate();
         init();
     }
@@ -90,7 +90,7 @@ public class BLEService extends Service{
                 if(openOrClosed && !isBluetoothOpen){
                     //偵測到藍芽開啟 發放廣播
                     isBluetoothOpen = true;
-                    Log.d("ed43", "BLE:openOrClosed: " + openOrClosed);
+                    //Log.d("ed43", "BLE:openOrClosed: " + openOrClosed);
                     Intent localIntent = new Intent("BleService");
                     localIntent.putExtra("isBluetoothOpen", isBluetoothOpen);
                     sendBroadcast(localIntent);
@@ -114,12 +114,13 @@ public class BLEService extends Service{
             switch (cmd){
                 // 搜索
                 case 0:
-                    Log.d("ed43", "service cmd : search");
+                    //Log.d("ed43", "service cmd : search");
                     search();
                     break;
                 // 連接設備
                 case 1:
                     //Log.d("ed43", "service cmd : connect");
+                    // 接收activity傳來的使用者資料
                     userProfile = intent.getByteArrayExtra("profile");
                     connect(id);
                     break;
@@ -128,14 +129,9 @@ public class BLEService extends Service{
                     disconnect();
                     break;
             }
-        }else {
-            Log.d("ed43", "stop self");
-            stopSelf();
         }
-        return START_NOT_STICKY;
-
         // START_NOT_STICKY : 使用这个返回值时，如果在执行完onStartCommand后，服务被异常kill掉，系统不会自动重启该服务。
-        //return START_NOT_STICKY;
+        return START_NOT_STICKY;
     }
 
     // 搜索
@@ -377,7 +373,7 @@ public class BLEService extends Service{
     // 停止服務
     @Override
     public void onDestroy() {
-        Log.d("ed43", "service onDestroy");
+        //Log.d("ed43", "service onDestroy");
         disconnect();
         stopSelf();
     }

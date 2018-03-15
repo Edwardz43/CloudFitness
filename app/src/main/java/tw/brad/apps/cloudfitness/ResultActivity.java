@@ -281,7 +281,7 @@ public class ResultActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d("ed43", "Result : onDestroy");
+        //Log.d("ed43", "Result : onDestroy");
         super.onDestroy();
         unregisterReceiver(receiver);
         disConnect();

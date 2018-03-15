@@ -32,11 +32,20 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
+import tw.brad.apps.cloudfitness.java_class.data.User;
+
 public class MainActivity extends AppCompatActivity {
     // 使用者偏好 SharedPreferences
     private SharedPreferences sharedPref;
     // 紀錄時間 與離開app相關
     private long last = 0;
+    // DB相關物件
+    private MyDBHelper dbHelper;
+    private SQLiteDatabase db;
+    // 使用者物件
+    private User user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
 
     // 初始化
     private void init() {
+        // 初始化 DB
+        dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
+        db = dbHelper.getReadableDatabase();
         // 取得 sharedPreferences
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         // 從 sharedPreferences 中取得 reMemberMe 的值  如果沒有 就預設 false
@@ -91,8 +103,34 @@ public class MainActivity extends AppCompatActivity {
 
     //登入
     public void signIn(View view){
-        Intent signInIntent = new Intent(this, LastWeightActivity.class);
-        startActivity(signInIntent);
+        // 初始化 使用者
+        user = new User();
+        EditText login_email = (EditText) findViewById(R.id.login_email);
+        EditText login_password = (EditText) findViewById(R.id.login_password);
+        String email = login_email.getText().toString();
+        String password = login_password.getText().toString();
+
+        if (email != null){
+            user.query(email, db);
+            Log.d("ed43", "user : " + new Gson().toJson(user));
+        }
+
+        //核對 email & password
+        if(email.length() > 0 && password.length() > 0){
+            //Log.i("ed43", "confirm user");
+            if(confirm_user(email, password)){
+                //Log.i("ed43", "Login Email : " + email);
+                Intent signInIntent = new Intent(this, LastWeightActivity.class);
+                signInIntent.putExtra("user", user);
+                startActivity(signInIntent);
+            }else{
+                Toast.makeText(this, "Incorrect Email or Password", Toast.LENGTH_SHORT).show();
+            }
+        }else if(email.length() == 0){
+            Toast.makeText(this, "Please Enter Email", Toast.LENGTH_SHORT).show();
+        }else if(email.length() > 0 && password.length() == 0){
+            Toast.makeText(this, "Please Enter Password", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //註冊
@@ -150,5 +188,24 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("http://mycloudfitness.com/forgetpassword/"));
         startActivity(intent);
+    }
+
+    //驗證User
+    private boolean confirm_user(String email, String password){
+        User confirm_user = new User();
+        confirm_user.query(email, db);
+        if(confirm_user.getEmail() != null){
+            String user_password = confirm_user.getPassword();
+            if(user_password.equals(password)){
+                //Log.d("USER_TEST", "OOOOOOO");
+                return true;
+            }else {
+                //Log.d("USER_TEST", "XXXXXX");
+                return false;
+            }
+        }else {
+            ///Log.d("USER_TEST", "GGGGG");
+            return false;
+        }
     }
 }

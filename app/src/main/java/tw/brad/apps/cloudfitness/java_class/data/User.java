@@ -1,5 +1,9 @@
 package tw.brad.apps.cloudfitness.java_class.data;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.io.Serializable;
 
 /**
@@ -11,6 +15,25 @@ public class User implements Serializable {
             birthdate, height_in, height_ft, height_cm, weight_lb, weight_kg, gender;
     private Integer unit_type, activity_level, rememberMe;
     private Long id, fb_id;
+
+    public User(){}
+
+    public User(String email, String password, String fisrtname, String lastname, String birthdate, String gender, Integer unit_type,
+                String height_ft, String height_in, String height_cm, String weight_lb, String weight_kg, Integer activity_level){
+        this.email = email;
+        this.password = password;
+        this.fisrtname = fisrtname;
+        this.lastname = lastname;
+        this.birthdate = birthdate;
+        this.gender = gender;
+        this.unit_type = unit_type;
+        this.height_ft = height_ft;
+        this.height_in = height_in;
+        this.height_cm = height_cm;
+        this.weight_lb = weight_lb;
+        this.weight_kg = weight_kg;
+        this.activity_level = activity_level;
+    }
 
     public Integer getRememberMe() {
         return rememberMe;
@@ -42,25 +65,6 @@ public class User implements Serializable {
 
     public void setUnit_type(Integer unit_type) {
         this.unit_type = unit_type;
-    }
-
-    public User(){}
-
-    public User(String email, String password, String fisrtname, String lastname, String birthdate, String gender, Integer unit_type,
-                    String height_ft, String height_in, String height_cm, String weight_lb, String weight_kg, Integer activity_level){
-        this.email = email;
-        this.password = password;
-        this.fisrtname = fisrtname;
-        this.lastname = lastname;
-        this.birthdate = birthdate;
-        this.gender = gender;
-        this.unit_type = unit_type;
-        this.height_ft = height_ft;
-        this.height_in = height_in;
-        this.height_cm = height_cm;
-        this.weight_lb = weight_lb;
-        this.weight_kg = weight_kg;
-        this.activity_level = activity_level;
     }
 
     public String getEmail() {
@@ -153,5 +157,68 @@ public class User implements Serializable {
 
     public void setActivity_level(Integer activity_level) {
         this.activity_level = activity_level;
+    }
+
+    public boolean insert(SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put("_id",this.id);
+        values.put("email",this.email);
+        values.put("password",this.password);
+        values.put("first_name",this.fisrtname);
+        values.put("last_name",this.lastname);
+        values.put("birth_date",this.birthdate);
+        values.put("height_in",this.height_in);
+        values.put("height_ft",this.height_ft);
+        values.put("height_cm",this.height_cm);
+        values.put("weight_lb",this.weight_lb);
+        values.put("weight_kg",this.weight_kg);
+        values.put("gender",this.gender);
+        values.put("unit_type",this.unit_type);
+        values.put("activity_level",this.activity_level);
+        values.put("fb_id",this.fb_id);
+        this.id = db.insert("users", null, values);
+        return this.id > 0;
+    }
+
+    public boolean update(SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put("_id",this.id);
+        values.put("email",this.email);
+        values.put("password",this.password);
+        values.put("first_name",this.fisrtname);
+        values.put("last_name",this.lastname);
+        values.put("birth_date",this.birthdate);
+        values.put("height_in",this.height_in);
+        values.put("height_ft",this.height_ft);
+        values.put("height_cm",this.height_cm);
+        values.put("weight_lb",this.weight_lb);
+        values.put("weight_kg",this.weight_kg);
+        values.put("gender",this.gender);
+        values.put("unit_type",this.unit_type);
+        values.put("activity_level",this.activity_level);
+        values.put("fb_id",this.fb_id);
+
+        return db.update("users", values, "_id",new String[] {""+this.id}) > 0 ;
+    }
+
+    public void query(String email, SQLiteDatabase db){
+        Cursor cursor = db.query("users", null, "email='" + email+"'", null, null, null, null);
+        while (cursor.moveToNext()){
+            this.id = cursor.getLong(cursor.getColumnIndex("_id"));
+            this.email = cursor.getString(cursor.getColumnIndex("email"));
+            this.password = cursor.getString(cursor.getColumnIndex("password"));
+            this.fisrtname = cursor.getString(cursor.getColumnIndex("first_name"));
+            this.lastname = cursor.getString(cursor.getColumnIndex("last_name"));
+            this.birthdate = cursor.getString(cursor.getColumnIndex("birth_date"));
+            this.height_ft = cursor.getString(cursor.getColumnIndex("height_ft"));
+            this.height_in = cursor.getString(cursor.getColumnIndex("height_in"));
+            this.height_cm = cursor.getString(cursor.getColumnIndex("height_cm"));
+            this.weight_lb = cursor.getString(cursor.getColumnIndex("weight_lb"));
+            this.weight_kg = cursor.getString(cursor.getColumnIndex("weight_kg"));
+            this.gender = cursor.getString(cursor.getColumnIndex("gender"));
+            this.unit_type = cursor.getInt(cursor.getColumnIndex("unit_type"));
+            this.activity_level = cursor.getInt(cursor.getColumnIndex("activity_level"));
+            this.fb_id = cursor.getLong(cursor.getColumnIndex("fb_id"));
+        }
     }
 }
