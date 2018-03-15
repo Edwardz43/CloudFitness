@@ -97,6 +97,7 @@ public class ResultActivity extends AppCompatActivity {
 
         weight_unit.setText(unit_type);
 
+        // 過濾器 : 讓接收器監聽特定的訊息
         IntentFilter filter = new IntentFilter("BleService");
         receiver = new MyBroadcastReceiver(this);
         registerReceiver(receiver, filter);
