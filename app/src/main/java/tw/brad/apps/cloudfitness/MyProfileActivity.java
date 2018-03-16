@@ -174,7 +174,7 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
         }
     }
 
-    // 按下 back按鍵 回到首頁 傳送User未更動的原始資料
+    // 按下 back按鍵 回到LastWeight 傳送User未更動的原始資料
     public void back(View view){
         Intent intent = new Intent(this, LastWeightActivity.class);
         intent.putExtra("user", user);
@@ -262,11 +262,11 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
         // 甚麼都不做
     }
 
-    // 改寫返回鍵 : 執行finish() 會回到首頁
+    // 改寫返回鍵 : 執行back()
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        back(null);
     }
 
     // 驗證 email 格式
