@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import tw.brad.apps.cloudfitness.java_class.Algorithm;
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
 import tw.brad.apps.cloudfitness.java_class.data.Record;
 import tw.brad.apps.cloudfitness.java_class.data.User;
@@ -68,9 +69,17 @@ public class LastWeightActivity extends AppCompatActivity {
         records = Record.query(user.getId(), db);
         if(records.size() > 0){
             //取最後一筆的體重
-            last_weight.setText("" + records.get(records.size() - 1).getWeight());
+            double lastWeight = records.get(records.size() - 1).getWeight();
+            if(user.getUnit_type() == 0){
+                // 如果是英制單位 將體重轉換
+                last_weight.setText("" + Algorithm.kgToPound(lastWeight));
+                last_weight_unit.setText("lb");
+            }else if(user.getUnit_type() == 1){
+                // 如果是公制單位 直接回傳
+                last_weight.setText(""+lastWeight);
+                last_weight_unit.setText("kg");
+            }
         }
-        last_weight_unit.setText((user.getUnit_type() == 0 ? "lb":"kg"));
     }
 
     // 跳頁 : myProfile

@@ -49,7 +49,7 @@ public class Algorithm {
 
     public static double kgToPound(double kg) {
         DecimalFormat df = new DecimalFormat("##.0");
-        return Double.parseDouble(df.format((kg*22046/1000+5)/10));
+        return Double.parseDouble(df.format((kg*22046/1000)/10));
     }
 
     public long[] getTimeStamp(List<Record> records, String period){
