@@ -28,13 +28,13 @@
         android:orientation="vertical"
         android:layout_weight="8"
         >
-        <com.github.mikephil.charting.charts.CombinedChart
+        <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true">
-        </com.github.mikephil.charting.charts.CombinedChart>
+        </com.github.mikephil.charting.charts.BarChart>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"

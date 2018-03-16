@@ -24,16 +24,22 @@ import java.util.List;
 import tw.brad.apps.cloudfitness.java_class.Algorithm;
 import tw.brad.apps.cloudfitness.java_class.BLEService;
 import tw.brad.apps.cloudfitness.java_class.MyBroadcastReceiver;
+import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
+import tw.brad.apps.cloudfitness.java_class.data.Record;
 import tw.brad.apps.cloudfitness.java_class.data.User;
 
 public class ResultActivity extends AppCompatActivity {
+    private MyDBHelper dbHelper;
+    private SQLiteDatabase db;
     private boolean isDialogShow, isDataUpdated;
     private List<SearchResult> device_List;
     private AlertDialog.Builder dialog_list;
     private String deviceMAC, unit_type;
     private TextView bmi, fat, water, muscle, bone, v_fat, weight, weight_unit;
     // 物件 : 使用者
-    private User userItem;
+    private User user;
+    // 物件 : 測量記錄
+    private Record record;
     // 自訂監聽器 : 彈出對話框用
     private MyOnclickListener mOnclickListener;
     // 自訂廣播接收器
@@ -51,9 +57,11 @@ public class ResultActivity extends AppCompatActivity {
 
     // 初始化
     private void init() {
-        // 暫時設置一個使用者
-        userItem = new User("t", "t","t","t","09/18/1982","male",1,"5","11","181","256","116",2);
-
+        // 初始化 DB
+        dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
+        db = dbHelper.getReadableDatabase();
+        // 從intent中取出User物件
+        user = (User) getIntent().getSerializableExtra("user");
         // 對話框顯示 : 否
         isDialogShow = false;
 
@@ -88,7 +96,7 @@ public class ResultActivity extends AppCompatActivity {
         bmi.setText("");
 
         // 初始化體重顯示單位 : 根據使用者偏好
-        int option = userItem.getUnit_type();
+        int option = user.getUnit_type();
         if(option == 0){
             this.unit_type = "lb";
         }else if(option == 1){
@@ -113,8 +121,12 @@ public class ResultActivity extends AppCompatActivity {
 
     // 按下save按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void save(View view){
-        Log.d("ed43", "save");
-        finish();
+        // 如果Record物件非空值 就寫入資料庫並離開
+        if(record != null){
+            boolean b = record.insert(db);
+            Log.d("ed43", "save : " + b);
+            finish();
+        }
     }
 
     // 按下discard按鍵 紀錄測量資料  並返回到 LastWeightActivity
@@ -207,13 +219,13 @@ public class ResultActivity extends AppCompatActivity {
     private byte[] setProfile(){
         try {
             // 年齡 : 動態計算 由使用者登入的生日計算
-            byte age = (byte) Algorithm.getAge(userItem.getBirthdate());
+            byte age = (byte) Algorithm.getAge(user.getBirthdate());
             // 性別
-            byte sex = (byte)(userItem.getGender().equals("female")? 0 : 1);
+            byte sex = (byte)(user.getGender().equals("female")? 0 : 1);
             // 偏好單位 1: 英制  2:公制
-            byte unit_type = (byte)(userItem.getUnit_type() + 1);
+            byte unit_type = (byte)(user.getUnit_type() + 1);
             // 身高 : 一律用公分
-            byte height = (byte)Integer.parseInt(userItem.getHeight_cm());
+            byte height = (byte)Integer.parseInt(user.getHeight_cm());
             // 顯示體重單位
             byte weight_unit = (byte)(unit_type == 1? -64: -128);
 
@@ -240,14 +252,16 @@ public class ResultActivity extends AppCompatActivity {
     // 設置測量結果 : 由服務端接收到資料
     public void setResult(double[] data){
         //Log.d("ed43", new Gson().toJson(data));
+        //將收到的資料寫成一筆紀錄
+        record = new Record(new Date().getTime(), data, user.getId());
         //如果結果已經更新 就避免重複
         if(!isDataUpdated){
-            if(userItem.getUnit_type() == 0){
+            if(user.getUnit_type() == 0){
                 // 因為體脂計只會回傳公斤 若使用者的偏好為英制 就多一個轉換動作
                 weight.setText("" + Algorithm.kgToPound(data[0]));
                 muscle.setText("" + Algorithm.kgToPound(data[3]) + unit_type);
                 bone.setText("" + Algorithm.kgToPound(data[4]) + unit_type);
-            }else if(userItem.getUnit_type() == 1){
+            }else if(user.getUnit_type() == 1){
                 weight.setText("" + data[0]);
                 muscle.setText("" + data[3] + unit_type);
                 bone.setText("" + data[4] + unit_type);

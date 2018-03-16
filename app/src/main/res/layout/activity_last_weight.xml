@@ -27,26 +27,27 @@
         android:layout_marginTop="30dp"
         >
         <TextView
-            android:id="@+id/weight"
+            android:id="@+id/last_weight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="159.2"
+            android:text="0.0"
             android:textSize="86dp"
             android:textColor="#4D7F98"
             android:textAlignment="center"
             />
+
         <TextView
+            android:id="@+id/last_weight_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/weight"
-            android:layout_toRightOf="@+id/weight"
-            android:id="@+id/weight_unit"
+            android:layout_alignBaseline="@+id/last_weight"
+            android:layout_alignBottom="@+id/last_weight"
+            android:layout_toEndOf="@+id/last_weight"
             android:text="lb"
-            android:textSize="30dp"
-            android:textColor="#4D7F98"
             android:textAlignment="center"
-            />
+            android:textColor="#4D7F98"
+            android:textSize="30dp" />
     </RelativeLayout>
 
     <RelativeLayout

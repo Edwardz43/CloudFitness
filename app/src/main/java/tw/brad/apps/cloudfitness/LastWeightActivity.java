@@ -7,12 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.google.gson.Gson;
 
+import java.util.List;
+
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
+import tw.brad.apps.cloudfitness.java_class.data.Record;
 import tw.brad.apps.cloudfitness.java_class.data.User;
 
 public class LastWeightActivity extends AppCompatActivity {
@@ -20,8 +24,12 @@ public class LastWeightActivity extends AppCompatActivity {
     private SQLiteDatabase db;
     // 使用者物件
     private User user;
+    // 物件 : 測量記錄
+    private Record record;
+    private List<Record> records;
     // 紀錄時間 與離開app相關
     private long last = 0;
+    private TextView last_weight, last_weight_unit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,10 @@ public class LastWeightActivity extends AppCompatActivity {
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
         db = dbHelper.getReadableDatabase();
 
+        // 初始化 TV
+        last_weight = findViewById(R.id.last_weight);
+        last_weight_unit = findViewById(R.id.last_weight_unit);
+
         // 從intent中取出Email 到資料庫搜索
         String email = getIntent().getStringExtra("email");
         if(email != null){
@@ -52,6 +64,13 @@ public class LastWeightActivity extends AppCompatActivity {
             //若找不到使用者 就退回首頁
             finish();
         }
+        // 從資料庫中搜索測量記錄
+        records = Record.query(user.getId(), db);
+        if(records.size() > 0){
+            //取最後一筆的體重
+            last_weight.setText("" + records.get(records.size() - 1).getWeight());
+        }
+        last_weight_unit.setText((user.getUnit_type() == 0 ? "lb":"kg"));
     }
 
     // 跳頁 : myProfile

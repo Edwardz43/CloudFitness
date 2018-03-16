@@ -1,6 +1,5 @@
 package tw.brad.apps.cloudfitness;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -17,18 +16,27 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.google.gson.Gson;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import tw.brad.apps.cloudfitness.chart.DayAxisValueFormatter;
+import tw.brad.apps.cloudfitness.chart.MyAxisValueFormatter;
+import tw.brad.apps.cloudfitness.chart.XYMarkerView;
+
+
 public class GraphActivity extends AppCompatActivity {
-    private CombinedChart mChart;
+    private BarChart mChart;
     private int itemcount = 12;
+    private int DATA_COUNT = 5;
     private  String[] mSelectedType;
     protected String[] mYear = new String[] {"Nov", "Dec", "Jan"};//"Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt",
     protected String[] mMonth =
@@ -109,9 +117,9 @@ public class GraphActivity extends AppCompatActivity {
                 dataSet = new double[] {
                         155.3,
                         155.2,
-                        155,
+                        0,
                         155.5,
-                        155,
+                        0,
                         156.3,
                         157.1,
                         156.3,
@@ -141,45 +149,22 @@ public class GraphActivity extends AppCompatActivity {
                 itemcount = mSelectedType.length;
                 minYAxisValue = (float) 158;
         }
-        mChart = (CombinedChart) findViewById(R.id.chart);
-        mChart.getDescription().setEnabled(false);
-        //mChart.setBackgroundColor(Color.WHITE);
-        mChart.setDrawGridBackground(false);
+
+
+        mChart = (BarChart) findViewById(R.id.chart);
         mChart.setDrawBarShadow(false);
-        mChart.setHighlightFullBarEnabled(false);
+        mChart.setDrawValueAboveBar(true);
+        mChart.getDescription().setEnabled(false);
+        mChart.setDrawGridBackground(false);
+        IAxisValueFormatter xAxisFormatter = new DayAxisValueFormatter(mChart);
+        IAxisValueFormatter custom = new MyAxisValueFormatter();
 
-        // draw bars behind lines
-        mChart.setDrawOrder(new CombinedChart.DrawOrder[]{
-                CombinedChart.DrawOrder.BAR,
-                CombinedChart.DrawOrder.BUBBLE,
-                CombinedChart.DrawOrder.CANDLE,
-                CombinedChart.DrawOrder.LINE,
-                CombinedChart.DrawOrder.SCATTER
-        });
-        Legend legend = mChart.getLegend();
-        legend.setWordWrapEnabled(true);
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
-        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        legend.setDrawInside(false);
-
-        YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setDrawGridLines(false);
-        rightAxis.setAxisMinimum(minYAxisValue); // this replaces setStartAtZero(true)
-
-        //設定縱軸
-        YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMinimum(minYAxisValue); // this replaces setStartAtZero(true)
-
-        //設定橫軸
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTypeface(mTfLight);
         xAxis.setDrawGridLines(false);
-        xAxis.setAxisMinimum(0f);
-        xAxis.setGranularity(1f);
-        xAxis.setLabelCount(itemcount);
+        xAxis.setGranularity(1f); // only intervals of 1 day
+        xAxis.setLabelCount(7);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -187,76 +172,80 @@ public class GraphActivity extends AppCompatActivity {
             }
         });
 
-        CombinedData data = new CombinedData();
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setTypeface(mTfLight);
+        leftAxis.setLabelCount(8, false);
+        leftAxis.setValueFormatter(custom);
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        leftAxis.setSpaceTop(15f);
+        leftAxis.setAxisMinimum(minYAxisValue); // this replaces setStartAtZero(true)
 
-        data.setData(generateLineData());
-        data.setData(generateBarData());
-        data.setValueTypeface(mTfLight);
+        YAxis rightAxis = mChart.getAxisRight();
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setTypeface(mTfLight);
+        rightAxis.setLabelCount(8, false);
+        rightAxis.setValueFormatter(custom);
+        rightAxis.setSpaceTop(15f);
+        rightAxis.setAxisMinimum(minYAxisValue); // this replaces setStartAtZero(true)
 
-        xAxis.setAxisMaximum(data.getXMax());
+        Legend l = mChart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setDrawInside(false);
+        l.setForm(Legend.LegendForm.SQUARE);
+        l.setFormSize(9f);
+        l.setTextSize(11f);
+        l.setXEntrySpace(4f);
+        // l.setExtra(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
+        // "def", "ghj", "ikl", "mno" });
+        // l.setCustom(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
+        // "def", "ghj", "ikl", "mno" });
 
-        mChart.setData(data);
-        mChart.invalidate();
+        XYMarkerView mv = new XYMarkerView(this, new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return mSelectedType[(int) value % itemcount];
+            }
+        });
+        mv.setChartView(mChart); // For bounds control
+        mChart.setMarker(mv); // Set the marker to the chart
+
+        setData(itemcount, 200);
     }
 
-    private LineData generateLineData() {
-
-        LineData d = new LineData();
-
-        ArrayList<Entry> entries = new ArrayList<Entry>();
-
-        for (int index = 0; index < itemcount; index++)
-            entries.add(new Entry(index + 0.1f, (float)dataSet[index]));
-
-        LineDataSet set = new LineDataSet(entries, "Line Data");
-        set.setColor(Color.rgb(240, 238, 70));
-        set.setLineWidth(2.5f);
-        set.setCircleColor(Color.rgb(240, 238, 70));
-        set.setCircleRadius(5f);
-        set.setFillColor(Color.rgb(240, 238, 70));
-        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set.setDrawValues(true);
-        set.setValueTextSize(10f);
-        set.setValueTextColor(Color.rgb(240, 238, 70));
-
-        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        d.addDataSet(set);
-
-        return d;
-    }
-
-    private BarData generateBarData() {
-
-        ArrayList<BarEntry> entries1 = new ArrayList<BarEntry>();
-        //ArrayList<BarEntry> entries2 = new ArrayList<BarEntry>();
-
-        for (int index = 0; index < itemcount; index++) {
-            entries1.add(new BarEntry(index + 0.1f, (float)dataSet[index]));
-            Log.i("Chart", "entries1 : " + entries1.get(index).getX() +", " + entries1.get(index).getY() );
+    private void setData(int count, float range) {
+        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+        for (int i = 0 ; i < count; i++) {
+            yVals1.add(new BarEntry(i, (float)dataSet[i]));
         }
+        BarDataSet set1;
+        if (mChart.getData() != null &&
+                mChart.getData().getDataSetCount() > 0) {
+            set1 = (BarDataSet) mChart.getData().getDataSetByIndex(0);
+            set1.setValues(yVals1);
+            mChart.getData().notifyDataChanged();
+            mChart.notifyDataSetChanged();
+        } else {
+            set1 = new BarDataSet(yVals1, "Weight");
+            set1.setDrawIcons(false);
+            set1.setColors(Color.GREEN);
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            dataSets.add(set1);
 
-        BarDataSet set1 = new BarDataSet(entries1, "Bar Data");
-        set1.setColor(Color.rgb(60, 220, 78));
-        set1.setValueTextColor(Color.rgb(60, 220, 78));
-        set1.setValueTextSize(10f);
-        //set1.setAxisDependency(YAxis.AxisDependency.RIGHT);
-
-//        float groupSpace = 0.06f;
-//        float barSpace = 0.02f; // x2 dataset
-        float barWidth = 0.5f; // x2 dataset
-        // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
-
-        BarData barData = new BarData(set1);
-        barData.setBarWidth(barWidth);
-
-        // make this BarData object grouped
-        //barData.groupBars(0, groupSpace, 0); // start at x = 0
-
-        return barData;
-    }
-
-    protected float getRandom(float range, float startsfrom) {
-        return (float) (Math.random() * range) + startsfrom;
+            BarData data = new BarData(dataSets);
+            data.setValueTextSize(10f);
+            data.setValueTypeface(mTfLight);
+            data.setBarWidth(0.9f);
+            data.setValueFormatter(new IValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                    DecimalFormat mFormat = new DecimalFormat("##.0");
+                    return mFormat.format(value);
+                }
+            });
+            mChart.setData(data);
+        }
     }
 
     // 按鈕 : 日資料
@@ -269,6 +258,7 @@ public class GraphActivity extends AppCompatActivity {
         //btnDay.setTextColor(0);
         mType = DAY;
         initChart();
+        mChart.invalidate();
     }
 
     // 按鈕 : 周資料
@@ -281,6 +271,7 @@ public class GraphActivity extends AppCompatActivity {
         //btnWeek.setTextColor(0);
         mType = WEEK;
         initChart();
+        mChart.invalidate();
     }
 
     // 按鈕 : 月資料
@@ -293,6 +284,7 @@ public class GraphActivity extends AppCompatActivity {
         //btnMonth.setTextColor(0);
         mType = MONTH;
         initChart();
+        mChart.invalidate();
     }
 
     // 按鈕 : 年資料
@@ -305,6 +297,7 @@ public class GraphActivity extends AppCompatActivity {
         //btnYear.setTextColor(0);
         mType = YEAR;
         initChart();
+        mChart.invalidate();
     }
 
     // 按下返回鍵 : 回到 LastWeightActivity

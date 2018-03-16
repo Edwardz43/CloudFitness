@@ -1,17 +1,28 @@
 package tw.brad.apps.cloudfitness.java_class.data;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.google.gson.Gson;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by EdLo on 2018/3/15.
  */
 
 public class Record implements Serializable {
-    private long id, user_id, dateTime;
+    private long id, user_id, datetime;
     private double weight, bmi, body_fat, body_water, muscle_mass, bone_mass, v_fat;
 
+    public Record(){}
+
     public Record(long dateTime, double[] data, long user_id){
-        this.dateTime = dateTime;
+        this.datetime = dateTime;
         this.weight = data[0];
         this.body_fat = data[1];
         this.body_water = data[2];
@@ -39,11 +50,11 @@ public class Record implements Serializable {
     }
 
     public long getDateTime() {
-        return dateTime;
+        return datetime;
     }
 
     public void setDateTime(long dateTime) {
-        this.dateTime = dateTime;
+        this.datetime = dateTime;
     }
 
     public double getWeight() {
@@ -100,5 +111,43 @@ public class Record implements Serializable {
 
     public void setV_fat(double v_fat) {
         this.v_fat = v_fat;
+    }
+
+    // CRUD : 新增Record
+    public boolean insert(SQLiteDatabase db){
+        ContentValues values = new ContentValues();
+        values.put("datetime",this.datetime);
+        values.put("weight",this.weight);
+        values.put("bmi",this.bmi);
+        values.put("body_fat",this.body_fat);
+        values.put("body_water",this.body_water);
+        values.put("muscle_mass",this.muscle_mass);
+        values.put("bone_mass",this.bone_mass);
+        values.put("v_fat",this.v_fat);
+        values.put("user_id",this.user_id);
+        this.setId(db.insert("record", null, values));
+        Log.d("ed43", "Record Insert : "+new Gson().toJson(this));
+        return this.id > 0;
+    }
+
+    // CRUD : 查詢所有Record 回傳Record List
+    public static List<Record> query(long user_id, SQLiteDatabase db){
+        List<Record> records = new ArrayList<>();
+        Cursor cursor = db.query("record", null, "user_id=" + user_id, null, null, null, null);
+        Record record = new Record();
+        while (cursor.moveToNext()){
+            record.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+            record.setDateTime(cursor.getLong(cursor.getColumnIndex("datetime")));
+            record.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
+            record.setBmi(cursor.getDouble(cursor.getColumnIndex("bmi")));
+            record.setBody_fat(cursor.getDouble(cursor.getColumnIndex("body_fat")));
+            record.setBody_water(cursor.getDouble(cursor.getColumnIndex("body_water")));
+            record.setMuscle_mass(cursor.getDouble(cursor.getColumnIndex("muscle_mass")));
+            record.setBone_mass(cursor.getDouble(cursor.getColumnIndex("bone_mass")));
+            record.setV_fat(cursor.getDouble(cursor.getColumnIndex("v_fat")));
+            record.setUser_id(cursor.getInt(cursor.getColumnIndex("user_id")));
+            records.add(record);
+        }
+        return records;
     }
 }
