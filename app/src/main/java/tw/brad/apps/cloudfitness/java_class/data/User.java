@@ -226,5 +226,23 @@ public class User implements Serializable {
         return null;
     }
 
-
+    public static User getSampleUser(SQLiteDatabase db){
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setPassword("password");
+        user.setFisrtname("Micheal");
+        user.setLastname("Jordan");
+        user.setBirthdate("08/07/1987");
+        user.setHeight_ft("6");
+        user.setHeight_in("6");
+        user.setHeight_cm("198");
+        user.setWeight_lb("200");
+        user.setWeight_kg("90");
+        user.setGender("male");
+        user.setUnit_type(0);
+        user.setActivity_level(3);
+        user.setFb_id(0l);
+        user.insert(db);
+        return user;
+    }
 }

@@ -18,9 +18,6 @@ import com.inuker.bluetooth.library.search.SearchRequest;
 import com.inuker.bluetooth.library.search.SearchResult;
 import com.inuker.bluetooth.library.search.response.SearchResponse;
 import java.util.UUID;
-
-import tw.brad.apps.cloudfitness.ErrorActivity;
-
 import static com.inuker.bluetooth.library.Constants.REQUEST_FAILED;
 import static com.inuker.bluetooth.library.Constants.REQUEST_SUCCESS;
 import static com.inuker.bluetooth.library.Constants.STATUS_CONNECTED;
@@ -31,9 +28,11 @@ import static com.inuker.bluetooth.library.Constants.STATUS_DISCONNECTED;
  */
 
 public class BLEService extends Service{
+    private boolean isSearching;
     static boolean isBluetoothOpen;
     static boolean isDeviceConnect;
     static boolean isDeviceSearched;
+    private boolean isConnectionLost;
     private String deviceMAC;
     private BluetoothClient mClient;
     private static BleConnectStatusListener mBleConnectStatusListener;
@@ -47,7 +46,7 @@ public class BLEService extends Service{
 
     // 回應體重數據的回傳
     private final byte[] weightResponse = new byte[]{90,-46,0,0,0,0,0,0,0,0,0,0,-120,-86};
-    //private final byte[] profileResponse = new byte[]{90,-43,0,0,0,0,0,0,0,0,0,0,-113,-86};
+    private final byte[] profileResponse = new byte[]{90,-45,0,0,0,0,0,0,0,0,0,0,-119,-86};
 
     // 使用者基本資料 由ResultActivity傳過來
     private byte[] userProfile;
@@ -66,6 +65,8 @@ public class BLEService extends Service{
     // 服務初始化
     private void init() {
         //Log.d("ed43", "service init()");
+        isSearching = false;
+
         // 藍芽開啟 : 否
         isBluetoothOpen = false;
 
@@ -74,6 +75,9 @@ public class BLEService extends Service{
 
         // 設備連結 : 否
         isDeviceConnect = false;
+
+        // 連結失敗 : 否
+        isConnectionLost = false;
 
         // 記錄體脂計回傳值 包括 : 體重 體脂 水分 肌肉質量 骨質輛 內臟脂肪 BMI
         data = new double[7];
@@ -169,8 +173,9 @@ public class BLEService extends Service{
                 // 停止搜索
                 //Log.d("ed43", "Search Stopped");
                 if(!isDeviceSearched){
+                    isDeviceSearched = true;
                     Intent it = new Intent("BleService");
-                    it.putExtra("deviceNotFound", true);
+                    it.putExtra("deviceNotFound", isDeviceSearched);
                     sendBroadcast(it);
                 }
             }
@@ -184,8 +189,8 @@ public class BLEService extends Service{
 
     // 連接設備
     private void connect(String deviceMAC) {
-        connectDevice(deviceMAC);
         this.deviceMAC = deviceMAC;
+        connectDevice(deviceMAC);
 
         // 偵測 Connect 狀態Listener
         mBleConnectStatusListener = new BleConnectStatusListener() {
@@ -197,7 +202,7 @@ public class BLEService extends Service{
                     //Log.d("ed43", "Connect Status Changed : DISCONNECTED");
                     //斷線
                     Intent it = new Intent("BleService");
-                    it.putExtra("connectError", true);
+                    it.putExtra("connectionLost", true);
                     sendBroadcast(it);
                 }
             }
@@ -246,6 +251,8 @@ public class BLEService extends Service{
                     it.putExtra("updateData", true);
                     it.putExtra("data", data);
                     sendBroadcast(it);
+                    // 回傳MCU表示收到
+                    write(profileResponse);
                 }else if(mData.substring(2,4).equals("D5")){
                     // 通知狀態 : MCU->APP應答用戶數據 表示寫入資料成功
                     Intent it = new Intent("BleService");
@@ -286,8 +293,8 @@ public class BLEService extends Service{
             return false;
         }
         BleConnectOptions options = new BleConnectOptions.Builder()
-                .setConnectRetry(3).setConnectTimeout(30000)
-                .setServiceDiscoverRetry(3).setServiceDiscoverTimeout(20000)
+                .setConnectRetry(3).setConnectTimeout(2000)
+                .setServiceDiscoverRetry(3).setServiceDiscoverTimeout(2000)
                 .build();
         mClient.connect(deviceMAC, options, new BleConnectResponse() {
             @Override
@@ -298,11 +305,12 @@ public class BLEService extends Service{
                     mNotify();
                     // 寫入使用者資料
                     write(userProfile);
-                }else if (code == REQUEST_FAILED){
+                }else if (code == REQUEST_FAILED && isConnectionLost){
                     //Log.d("ed43","Connect : REQUEST_FAILED");
                     // 連結失敗
+                    isConnectionLost = true;
                     Intent it = new Intent("BleService");
-                    it.putExtra("connectError", true);
+                    it.putExtra("connectionLost", isConnectionLost);
                     sendBroadcast(it);
                 }
             }

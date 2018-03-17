@@ -40,6 +40,20 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             activity.selectDevice((SearchResult) intent.getParcelableExtra("device"));
         }
 
+        // 接收訊息 : 搜索失敗
+        boolean deviceNotFound = intent.getBooleanExtra("deviceNotFound",false);
+        if(deviceNotFound){
+            // 啟動 跳轉搜索失敗
+            activity.device_not_found();
+        }
+
+        // 接收訊息 : 連結錯誤
+        boolean connectionLost = intent.getBooleanExtra("connectionLost",false);
+        if(connectionLost){
+            // 啟動 跳轉連結錯誤
+            activity.connection_lost();
+        }
+
         // 接收訊息 : 設備已就緒
         boolean isReadyForScale = intent.getBooleanExtra("isReadyForScale", false);
         if(isReadyForScale) {

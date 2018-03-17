@@ -146,8 +146,6 @@ public class Record implements Serializable {
     public boolean insert(SQLiteDatabase db){
         ContentValues values = new ContentValues();
         values.put("datetime",this.datetime);
-        values.put("date",this.date);
-        values.put("time",this.time);
         values.put("weight",this.weight);
         values.put("bmi",this.bmi);
         values.put("body_fat",this.body_fat);
@@ -169,8 +167,6 @@ public class Record implements Serializable {
         while (cursor.moveToNext()){
             record.setId(cursor.getLong(cursor.getColumnIndex("_id")));
             record.setDateTime(cursor.getLong(cursor.getColumnIndex("datetime")));
-            record.setDate(cursor.getString(cursor.getColumnIndex("date")));
-            record.setTime(cursor.getString(cursor.getColumnIndex("time")));
             record.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
             record.setBmi(cursor.getDouble(cursor.getColumnIndex("bmi")));
             record.setBody_fat(cursor.getDouble(cursor.getColumnIndex("body_fat")));

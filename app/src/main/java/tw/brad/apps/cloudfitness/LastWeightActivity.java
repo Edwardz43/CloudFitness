@@ -100,7 +100,7 @@ public class LastWeightActivity extends AppCompatActivity {
     // 跳頁 : 圖表顯示
     public void graph(View view){
         Intent intent = new Intent(this, GraphActivity.class);
-        intent.putExtra("user", user);
+        //intent.putExtra("user", user);
         startActivity(intent);
     }
 

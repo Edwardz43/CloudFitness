@@ -18,6 +18,9 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
 import tw.brad.apps.cloudfitness.java_class.data.User;
 
@@ -77,17 +80,17 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
         db = dbHelper.getReadableDatabase();
         // 取得 sharedPreferences
-        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        /*sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         // 從 sharedPreferences 中取得 reMemberMe 的值  如果沒有 就預設 false
         boolean reMemberMe = sharedPref.getBoolean("rememberMe", false);
         if(reMemberMe){
             //Log.d("ed43", "remember me");
-        }
+        }*/
     }
 
     //登入
     public void signIn(View view){
-        EditText login_email = (EditText) findViewById(R.id.login_email);
+       /* EditText login_email = (EditText) findViewById(R.id.login_email);
         EditText login_password = (EditText) findViewById(R.id.login_password);
         String email = login_email.getText().toString();
         String password = login_password.getText().toString();
@@ -108,7 +111,13 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Please Enter Email", Toast.LENGTH_SHORT).show();
         }else if(email.length() > 0 && password.length() == 0){
             Toast.makeText(this, "Please Enter Password", Toast.LENGTH_SHORT).show();
-        }
+        }*/
+        Intent signInIntent = new Intent(this, LastWeightActivity.class);
+        User sampleUser = User.getSampleUser(db);
+        signInIntent.putExtra("user", sampleUser);
+        Log.i("ed43", "user : " + new Gson().toJson(sampleUser));
+        startActivity(signInIntent);
+        finish();
     }
 
     //註冊
@@ -122,11 +131,11 @@ public class MainActivity extends AppCompatActivity {
     public void rememberMe(View view){
         CheckBox rememberCheckBox = (CheckBox) view;
         boolean checked = rememberCheckBox.isChecked();
-        SharedPreferences.Editor editor = sharedPref.edit();
+        /*SharedPreferences.Editor editor = sharedPref.edit();
 
         // 將checkbox  結果記錄在SharedPreferences
         editor.putBoolean("rememberMe",checked);
-        editor.commit();
+        editor.commit();*/
 
         //Log.i("ed43", "IsChecked : " + checked);
     }
@@ -135,15 +144,6 @@ public class MainActivity extends AppCompatActivity {
     public void fb_login(View view){
         Log.i("ed43", "fb_login");
     }
-
-//    @Override
-//    public void onDestroy() {
-//        Log.d("ed43", "Destroy");
-//        super.onDestroy();
-//        // 將app的程序清除掉
-//        android.os.Process.killProcess(android.os.Process.myPid());
-//        System.exit(0);
-//    }
 
     // 改寫按下返回鍵 離開app
     @Override

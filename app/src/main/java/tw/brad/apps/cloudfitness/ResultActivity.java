@@ -62,6 +62,9 @@ public class ResultActivity extends AppCompatActivity {
         db = dbHelper.getReadableDatabase();
         // 從intent中取出User物件
         user = (User) getIntent().getSerializableExtra("user");
+        if(user == null){
+            finish();
+        }
         // 對話框顯示 : 否
         isDialogShow = false;
 
@@ -142,6 +145,27 @@ public class ResultActivity extends AppCompatActivity {
         intent.putExtra("cmd", 0);
         startService(intent);
     }
+
+    // 跳轉 : 搜索失敗頁面
+    public void device_not_found(){
+        Log.d("ed43","device_not_found()");
+        Intent intent = new Intent(this, ErrorActivity.class);
+        intent.putExtra("condition", "deviceNotFound");
+        intent.putExtra("user", user);
+        startActivity(intent);
+        finish();
+    }
+
+    // 跳轉 : 連結失敗頁面
+    public void connection_lost() {
+        Log.d("ed43","connection_lost()");
+        Intent intent = new Intent(this, ErrorActivity.class);
+        intent.putExtra("condition", "connectionLost");
+        intent.putExtra("user", user);
+        startActivity(intent);
+        finish();
+    }
+
 
     // 連接設備 : 將使用者點選的設備 傳到service 啟動連結
     private void connect(){
