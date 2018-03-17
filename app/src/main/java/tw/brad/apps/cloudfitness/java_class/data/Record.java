@@ -8,7 +8,11 @@ import android.util.Log;
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,6 +22,7 @@ import java.util.List;
 public class Record implements Serializable {
     private long id, user_id, datetime;
     private double weight, bmi, body_fat, body_water, muscle_mass, bone_mass, v_fat;
+    private String date, time;
 
     public Record(){}
 
@@ -31,6 +36,13 @@ public class Record implements Serializable {
         this.v_fat = data[5];
         this.bmi = data[6];
         this.user_id = user_id;
+
+        // 利用DateFormat 將時間標籤 轉為特定格式的時間字串 方便日後做sql查詢
+        DateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        this.date = format.format(dateTime);
+        format = new SimpleDateFormat("HH:mm:ss");
+        this.time = format.format(dateTime);
+
     }
 
     public long getId() {
@@ -56,6 +68,23 @@ public class Record implements Serializable {
     public void setDateTime(long dateTime) {
         this.datetime = dateTime;
     }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
 
     public double getWeight() {
         return weight;
@@ -117,6 +146,8 @@ public class Record implements Serializable {
     public boolean insert(SQLiteDatabase db){
         ContentValues values = new ContentValues();
         values.put("datetime",this.datetime);
+        values.put("date",this.date);
+        values.put("time",this.time);
         values.put("weight",this.weight);
         values.put("bmi",this.bmi);
         values.put("body_fat",this.body_fat);
@@ -138,6 +169,8 @@ public class Record implements Serializable {
         while (cursor.moveToNext()){
             record.setId(cursor.getLong(cursor.getColumnIndex("_id")));
             record.setDateTime(cursor.getLong(cursor.getColumnIndex("datetime")));
+            record.setDate(cursor.getString(cursor.getColumnIndex("date")));
+            record.setTime(cursor.getString(cursor.getColumnIndex("time")));
             record.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
             record.setBmi(cursor.getDouble(cursor.getColumnIndex("bmi")));
             record.setBody_fat(cursor.getDouble(cursor.getColumnIndex("body_fat")));
@@ -150,4 +183,33 @@ public class Record implements Serializable {
         }
         return records;
     }
+
+    // CRUD : 查詢特定期間的Record 同一天有多筆取平均  回傳Record List
+    public static List<Record> queryByCondition(long user_id, SQLiteDatabase db, long start_date, long end_date){
+        List<Record> records = new ArrayList<>();
+        String id = "" + user_id;
+        String startDate = "" + start_date;
+        String endDate = "" + end_date;
+        Cursor cursor = db.query(
+                "record", new String[]{"datetime", "date", "time", "AVG(weight)"},
+                "user_id=? AND dateime BETWEEN ? AND ?",
+                new String[]{id, startDate, endDate}, "date",
+                null, null);
+        Record record = new Record();
+        while (cursor.moveToNext()){
+            record.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+            record.setDateTime(cursor.getLong(cursor.getColumnIndex("datetime")));
+            record.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));
+            record.setBmi(cursor.getDouble(cursor.getColumnIndex("bmi")));
+            record.setBody_fat(cursor.getDouble(cursor.getColumnIndex("body_fat")));
+            record.setBody_water(cursor.getDouble(cursor.getColumnIndex("body_water")));
+            record.setMuscle_mass(cursor.getDouble(cursor.getColumnIndex("muscle_mass")));
+            record.setBone_mass(cursor.getDouble(cursor.getColumnIndex("bone_mass")));
+            record.setV_fat(cursor.getDouble(cursor.getColumnIndex("v_fat")));
+            record.setUser_id(cursor.getInt(cursor.getColumnIndex("user_id")));
+            records.add(record);
+        }
+        return records;
+    }
+
 }

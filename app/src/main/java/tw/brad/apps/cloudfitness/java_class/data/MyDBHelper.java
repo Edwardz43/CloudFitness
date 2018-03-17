@@ -37,6 +37,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS record (" +
             "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "datetime INTEGER , " +
+            "date TEXT , " +
+            "time TEXT , " +
             "weight REAL , " +
             "bmi REAL , " +
             "body_fat REAL , " +
