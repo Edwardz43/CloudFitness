@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp"
+    >
+
+    <TextView
+        android:id="@+id/lblListDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="12354"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft" />
+    <TextView
+        android:id="@+id/lblListData1st"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="334568"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft" />
+    <TextView
+        android:id="@+id/lblListData2nd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:text="hhhhhhh"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft" />
+</LinearLayout>
