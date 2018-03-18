@@ -22,8 +22,9 @@ import tw.brad.apps.cloudfitness.R;
 public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
-    private List<String> _listDataHeader; // header titles
-    // child data in format of header title, child title
+    // list 標頭 : 日期
+    private List<String> _listDataHeader;
+    // list 內容 : 詳細日期及測量資料
     private HashMap<String, List<String[]>> _listDataChild;
 
     public MyExpandableListAdapter(Context context, List<String> listDataHeader,
