@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import java.util.List;
 
 import tw.brad.apps.cloudfitness.java_class.Algorithm;
+import tw.brad.apps.cloudfitness.java_class.BLEService;
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
 import tw.brad.apps.cloudfitness.java_class.data.Record;
 import tw.brad.apps.cloudfitness.java_class.data.User;
@@ -113,6 +114,9 @@ public class LastWeightActivity extends AppCompatActivity {
 
     // 跳頁 : 登出
     public void signOut(View view){
+        Intent serviceIntent = new Intent(this, BLEService.class);
+        serviceIntent.putExtra("cmd",3);
+        startService(serviceIntent);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

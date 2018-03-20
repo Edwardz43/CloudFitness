@@ -47,6 +47,7 @@ public class BLEService extends Service{
     // 回應體重數據的回傳
     private final byte[] weightResponse = new byte[]{90,-46,0,0,0,0,0,0,0,0,0,0,-120,-86};
     private final byte[] profileResponse = new byte[]{90,-45,0,0,0,0,0,0,0,0,0,0,-119,-86};
+    private final byte[] signOutResponse = new byte[]{90,-42,0,0,0,0,0,0,0,0,0,0,-116,-86};
 
     // 使用者基本資料 由ResultActivity傳過來
     private byte[] userProfile;
@@ -132,6 +133,10 @@ public class BLEService extends Service{
                 case 2:
                     disconnect();
                     break;
+                // 重新測試
+                case 3:
+                    signOut();
+                    break;
             }
         }
         // START_NOT_STICKY : 使用这个返回值时，如果在执行完onStartCommand后，服务被异常kill掉，系统不会自动重启该服务。
@@ -165,6 +170,7 @@ public class BLEService extends Service{
                     it.putExtra("isDeviceSearched", isDeviceSearched);
                     it.putExtra("device", device);
                     sendBroadcast(it);
+                    mClient.stopSearch();
                 }
             }
 
@@ -175,7 +181,7 @@ public class BLEService extends Service{
                 if(!isDeviceSearched){
                     isDeviceSearched = true;
                     Intent it = new Intent("BleService");
-                    it.putExtra("deviceNotFound", isDeviceSearched);
+                    it.putExtra("deviceNotFound", true);
                     sendBroadcast(it);
                 }
             }
@@ -200,10 +206,6 @@ public class BLEService extends Service{
                     //Log.d("ed43", "Connect Status Changed : CONNECTED");
                 } else if (status == STATUS_DISCONNECTED) {
                     //Log.d("ed43", "Connect Status Changed : DISCONNECTED");
-                    //斷線
-                    Intent it = new Intent("BleService");
-                    it.putExtra("connectionLost", true);
-                    sendBroadcast(it);
                 }
             }
         };
@@ -214,14 +216,17 @@ public class BLEService extends Service{
 
     // 與設備中斷連結
     private void disconnect() {
+        Log.d("ed43", "disconnect()");
         // 停止搜索
         mClient.stopSearch();
         if(isBluetoothOpen){
             if (this.deviceMAC != null) {
                 // 中斷連結
+                Log.d("ed43", "disconnect(deviceMAC)");
                 mClient.disconnect(deviceMAC);
             }
             // 關閉藍芽
+            Log.d("ed43", "closeBluetooth()");
             mClient.closeBluetooth();
         }
         // 取消註冊監聽器
@@ -279,33 +284,42 @@ public class BLEService extends Service{
             public void onResponse(int code) {
                 //Log.d("ed43", "write response code : " + code);
                 if (code == REQUEST_SUCCESS) {
-                    //Log.d("ed43", "OK");
+                    Log.d("ed43", "OK");
                 }else if(code == REQUEST_FAILED){
-                    //Log.d("ed43", "FAILED");
+                    Log.d("ed43", "FAILED");
                 }
             }
         });
     }
 
+    // 登出 : 重啟測試
+    private void signOut() {
+        Log.d("ed43", "Sign Out");
+        write(signOutResponse);
+    }
+
     // 連結設備 : activity回傳的MAC連結
     private boolean connectDevice(String deviceMAC){
+        //Log.d("ed43","connectDevice deviceMAC : " + deviceMAC);
         if (deviceMAC == null) {
             return false;
         }
         BleConnectOptions options = new BleConnectOptions.Builder()
-                .setConnectRetry(3).setConnectTimeout(2000)
-                .setServiceDiscoverRetry(3).setServiceDiscoverTimeout(2000)
+                .setConnectRetry(3).setConnectTimeout(1500)
+                .setServiceDiscoverRetry(3).setServiceDiscoverTimeout(1500)
                 .build();
         mClient.connect(deviceMAC, options, new BleConnectResponse() {
             @Override
             public void onResponse(int code, BleGattProfile data) {
                 //Log.d("ed43","connectDevice Response");
+                Log.d("ed43","connectDevice code : " + code);
                 if(code == REQUEST_SUCCESS){
                     // 連結成功 開啟通知
+                    //Log.d("ed43","connectDevice : REQUEST_SUCCESS");
                     mNotify();
                     // 寫入使用者資料
                     write(userProfile);
-                }else if (code == REQUEST_FAILED && isConnectionLost){
+                }else if (code == REQUEST_FAILED && !isConnectionLost){
                     //Log.d("ed43","Connect : REQUEST_FAILED");
                     // 連結失敗
                     isConnectionLost = true;
@@ -381,7 +395,7 @@ public class BLEService extends Service{
     // 停止服務
     @Override
     public void onDestroy() {
-        //Log.d("ed43", "service onDestroy");
+        Log.d("ed43", "service onDestroy");
         disconnect();
         stopSelf();
     }

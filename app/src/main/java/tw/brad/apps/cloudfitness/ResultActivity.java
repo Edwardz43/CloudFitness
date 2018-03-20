@@ -231,6 +231,9 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
 
+        // 取消 : 按下返回鍵
+        dialog_list.setCancelable(false);
+
         // 如果對話框沒有顯示 就 show() 避免重複
         if(!isDialogShow) {
             dialog_list.show();
@@ -322,8 +325,8 @@ public class ResultActivity extends AppCompatActivity {
         //Log.d("ed43", "Result : onDestroy");
         super.onDestroy();
         unregisterReceiver(receiver);
-        disConnect();
-        Intent intent = new Intent(this, BLEService.class);
-        stopService(intent);
+//        disConnect();
+//        Intent intent = new Intent(this, BLEService.class);
+//        stopService(intent);
     }
 }

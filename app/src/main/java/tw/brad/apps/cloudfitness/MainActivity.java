@@ -1,13 +1,19 @@
 package tw.brad.apps.cloudfitness;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +27,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import tw.brad.apps.cloudfitness.java_class.BLEService;
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
 import tw.brad.apps.cloudfitness.java_class.data.User;
 
@@ -33,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private MyDBHelper dbHelper;
     private SQLiteDatabase db;
 
+    // 判斷GPS是否開啟
+    private boolean isGpsOPen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         // 取權限的callback
         if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             // 如果取得正確的權限  才初始化
-            //Log.d("ed43", "ok");
+            Log.d("ed43", "onRequestPermissionsResult");
             init();
         }else {
             // 權限取得失敗
@@ -76,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 初始化
     private void init() {
+        Log.d("ed43", "init()");
         // 初始化 DB
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
         db = dbHelper.getReadableDatabase();
@@ -153,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
 
         // 兩次按下返回鍵的間隔時間 < 3秒  就離開app
         if(now - last <= 3 * 1000){
+            Intent serviceIntent = new Intent(this, BLEService.class);
+            serviceIntent.putExtra("cmd",2);
+            startService(serviceIntent);
+            stopService(serviceIntent);
             finish();
         }else {
             // 第一次按下返回鍵  now - last 一定會 > 3 * 1000
@@ -160,6 +174,20 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"Click Back one more to exit",Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    // 改寫onResume : 每次回到首頁都先檢查GPS是否開啟
+    @Override
+    public void onResume(){
+        Log.d("ed43", "onResume");
+        super.onResume();
+        isGpsOPen = gpsStatus(this);
+
+        // 如果GPS未開啟 就打開
+        if(!isGpsOPen){
+            // 開啟GPS
+            openGPS(this);
+        }
     }
 
     //忘記密碼 會開啟cloudfitness的網頁超連結
@@ -185,6 +213,68 @@ public class MainActivity extends AppCompatActivity {
         }else {
             ///Log.d("USER_TEST", "GGGGG");
             return false;
+        }
+    }
+
+    // 開啟GPS定位
+    public void openGPS(Context context) {
+        Log.d("ed43", "openGPS");
+        final AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+
+        final String message = "Do you want open GPS setting to connect scale?";
+
+        builder.setMessage(message).setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface d, int id) {
+                        showGPSOpenMessage(true);
+                        d.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface d, int id) {
+                            d.cancel();
+                            showGPSOpenMessage(false);
+                        }
+                    });
+
+        Dialog dialog = builder.create();
+        // 取消 : 按下他地方
+        dialog.setCanceledOnTouchOutside(false);
+        // 取消 : 按下返回鍵
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    // 判斷GPS是否開啟 : 若未開啟 將引導使用者置設定頁面
+    public static final boolean gpsStatus(final Context context) {
+        //Log.d("ed43", "isGpsOPen");
+        LocationManager locationManager
+                = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        // 通過GPS衛星定位，定位級別可以精確到街（通過24顆衛星定位，在室外和空曠的地方定位准確、速度快）
+        boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        // 通過WLAN或移動網絡(3G/2G)確定的位置（也稱作AGPS，輔助GPS定位。主要用於在室內或遮蓋物（建築群或茂密的深林等）密集的地方定位）
+        boolean network = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if (gps || network) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // 引導使用者開啟GPS
+    private void showGPSOpenMessage(boolean option){
+        if(option){
+            // 若使用者按下OK 就跳到設置頁面
+            final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+            startActivity(new Intent(action));
+        }else {
+            // 若使用者按下取消 就離開APP
+            Toast.makeText(
+                    this,
+                    "You have to open GPS to connect BLE device.",
+                    Toast.LENGTH_LONG).show();
+            finish();
         }
     }
 }
