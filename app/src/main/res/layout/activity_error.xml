@@ -28,7 +28,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="O"
+            android:text="X"
+            android:textColor="#f00"
             android:textSize="100dp"
             android:layout_centerInParent="true"
             />

@@ -37,7 +37,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         boolean isDeviceSearched = intent.getBooleanExtra("isDeviceSearched",false);
         if(isDeviceSearched){
             // 啟動 選擇連結設備
-            activity.selectDevice((SearchResult) intent.getParcelableExtra("device"));
+            SearchResult device = (SearchResult) intent.getParcelableExtra("device");
+            //Log.d("ed43", device.getName() + ":" + device.getAddress());
+            activity.selectDevice(device);
         }
 
         // 接收訊息 : 搜索失敗
@@ -51,6 +53,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         boolean connectionLost = intent.getBooleanExtra("connectionLost",false);
         if(connectionLost){
             // 啟動 跳轉連結錯誤
+            Log.d("ed43", "Receiver Connection Lost");
             activity.connection_lost();
         }
 

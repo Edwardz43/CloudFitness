@@ -158,7 +158,7 @@ public class BLEService extends Service{
                 //Log.d("ed43", "Device Founded");
 
                 // 如果之前尚未搜索到 且 搜到的設備符合條件
-                if(!isDeviceSearched && device.getName().substring(0, 3).equals("MCF")){
+                if(!isDeviceSearched  && device.getName().substring(0, 3).equals("MCF")){
                     // 發送廣播並將設備的MAC回傳到Activity
                     isDeviceSearched = true;
                     Intent it = new Intent("BleService");
