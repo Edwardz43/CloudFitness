@@ -3,7 +3,6 @@ package tw.brad.apps.cloudfitness;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -134,13 +133,13 @@ public class ResultActivity extends AppCompatActivity {
 
     // 按下discard按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void discard(View view){
-        Log.d("ed43", "discord");
+        //Log.d("ed43", "discord");
         finish();
     }
 
     // 搜索 : 當廣播接收器收到藍芽已開啟 便會啟動搜索
     public void search(){
-        Log.d("ed43","search()");
+        //Log.d("ed43","search()");
         Intent intent = new Intent(this, BLEService.class);
         intent.putExtra("cmd", 0);
         startService(intent);
@@ -148,7 +147,7 @@ public class ResultActivity extends AppCompatActivity {
 
     // 跳轉 : 搜索失敗頁面
     public void device_not_found(){
-        Log.d("ed43","device_not_found()");
+        //Log.d("ed43","device_not_found()");
         Intent intent = new Intent(this, ErrorActivity.class);
         intent.putExtra("condition", "deviceNotFound");
         intent.putExtra("user", user);
@@ -158,7 +157,7 @@ public class ResultActivity extends AppCompatActivity {
 
     // 跳轉 : 連結失敗頁面
     public void connection_lost() {
-        Log.d("ed43","connection_lost()");
+        //Log.d("ed43","connection_lost()");
         Intent intent = new Intent(this, ErrorActivity.class);
         intent.putExtra("condition", "connectionLost");
         intent.putExtra("user", user);

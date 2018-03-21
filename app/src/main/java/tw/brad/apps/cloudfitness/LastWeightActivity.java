@@ -27,7 +27,6 @@ public class LastWeightActivity extends AppCompatActivity {
     // 使用者物件
     private User user;
     // 物件 : 測量記錄
-    private Record record;
     private List<Record> records;
     // 紀錄時間 與離開app相關
     private long last = 0;

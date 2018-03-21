@@ -28,11 +28,11 @@ import static com.inuker.bluetooth.library.Constants.STATUS_DISCONNECTED;
  */
 
 public class BLEService extends Service{
-    private boolean isSearching;
     static boolean isBluetoothOpen;
     static boolean isDeviceConnect;
     static boolean isDeviceSearched;
     private boolean isConnectionLost;
+    private boolean isSearchStoped;
     private String deviceMAC;
     private BluetoothClient mClient;
     private static BleConnectStatusListener mBleConnectStatusListener;
@@ -66,13 +66,14 @@ public class BLEService extends Service{
     // 服務初始化
     private void init() {
         //Log.d("ed43", "service init()");
-        isSearching = false;
-
         // 藍芽開啟 : 否
         isBluetoothOpen = false;
 
         // 設備是否搜索到 : 否
         isDeviceSearched = false;
+
+        // 搜索終止 : 否
+        isSearchStoped = false;
 
         // 設備連結 : 否
         isDeviceConnect = false;
@@ -146,6 +147,7 @@ public class BLEService extends Service{
     // 搜索
     private void search() {
         isDeviceSearched = false;
+        isSearchStoped = false;
         SearchRequest request = new SearchRequest.Builder()
                 .searchBluetoothLeDevice(5000, 3)
                 .build();
@@ -178,10 +180,11 @@ public class BLEService extends Service{
             public void onSearchStopped() {
                 // 停止搜索
                 //Log.d("ed43", "Search Stopped");
-                if(!isDeviceSearched){
-                    isDeviceSearched = true;
+                // 如果尚未搜索到設備 且搜索尚未停止
+                if(!isDeviceSearched && !isSearchStoped){
+                    isSearchStoped = true;
                     Intent it = new Intent("BleService");
-                    it.putExtra("deviceNotFound", true);
+                    it.putExtra("deviceNotFound", isSearchStoped);
                     sendBroadcast(it);
                 }
             }
@@ -317,14 +320,16 @@ public class BLEService extends Service{
             @Override
             public void onResponse(int code, BleGattProfile data) {
                 //Log.d("ed43","connectDevice Response");
-                Log.d("ed43","connectDevice code : " + code);
+                //Log.d("ed43","connectDevice code : " + code);
                 if(code == REQUEST_SUCCESS){
                     // 連結成功 開啟通知
                     //Log.d("ed43","connectDevice : REQUEST_SUCCESS");
+                    // 停止搜索 準備連結
+                    mClient.stopSearch();
                     mNotify();
                     // 寫入使用者資料
                     write(userProfile);
-                }else if (code == REQUEST_FAILED && !isConnectionLost){
+                }else if (code == REQUEST_FAILED){
                     //Log.d("ed43","Connect : REQUEST_FAILED");
                     // 連結失敗
                     isConnectionLost = true;
