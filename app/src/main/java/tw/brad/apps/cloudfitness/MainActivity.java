@@ -1,9 +1,12 @@
 package tw.brad.apps.cloudfitness;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +16,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -39,9 +43,11 @@ public class MainActivity extends AppCompatActivity {
     // DB相關物件
     private MyDBHelper dbHelper;
     private SQLiteDatabase db;
-
     // 判斷GPS是否開啟
     private boolean isGpsOPen;
+    // 藍芽支援功能相關物件
+    BluetoothManager bluetoothManager;
+    BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,32 @@ public class MainActivity extends AppCompatActivity {
         //隱藏標題
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+
+        // 取得手機API版本 若是5版 就進行藍芽功能檢查
+        int sdk_version =  Integer.valueOf(Build.VERSION.SDK_INT);
+        if(sdk_version == 21 || sdk_version == 22){
+            bluetoothManager = (BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+            bluetoothAdapter = bluetoothManager.getAdapter();
+
+            // 檢查5版的藍芽支援 : 沒過會跳出訊息  然後離開app
+            if(!checkBluetooth()){
+                final MainActivity activity = this;
+                AlertDialog.Builder builder =  new AlertDialog.Builder(this);
+                String message = "Your device do not support BLE";
+                builder.setMessage(message).setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface d, int id) {
+                                showGPSOpenMessage(true);
+                                d.dismiss();
+                                activity.finish();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.setCancelable(false);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+            }
+        }
 
         // 請求權限
         if(ContextCompat.checkSelfPermission(this,
@@ -85,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
 
     // 初始化
     private void init() {
-        Log.d("ed43", "init()");
+        //Log.d("ed43", "init()");
+
         // 初始化 DB
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
         db = dbHelper.getReadableDatabase();
@@ -96,6 +129,15 @@ public class MainActivity extends AppCompatActivity {
         if(reMemberMe){
             //Log.d("ed43", "remember me");
         }*/
+    }
+
+    // for 5.0(API 21)檢查藍芽功能是否支援
+    @TargetApi(21)
+    private boolean checkBluetooth(){
+        return
+                bluetoothAdapter.isMultipleAdvertisementSupported() &&
+                bluetoothAdapter.isOffloadedFilteringSupported() &&
+                bluetoothAdapter.isOffloadedScanBatchingSupported();
     }
 
     //登入
@@ -186,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
         // 如果GPS未開啟 就打開
         if(!isGpsOPen){
             // 開啟GPS
-            openGPS(this);
+            openGPS();
         }
     }
 
@@ -217,26 +259,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 開啟GPS定位
-    public void openGPS(Context context) {
+    public void openGPS() {
         Log.d("ed43", "openGPS");
         final AlertDialog.Builder builder =  new AlertDialog.Builder(this);
-
         final String message = "Do you want open GPS setting to connect scale?";
-
         builder.setMessage(message).setPositiveButton("OK",
+            new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface d, int id) {
+                    showGPSOpenMessage(true);
+                    d.dismiss();
+                }
+            })
+            .setNegativeButton("Cancel",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface d, int id) {
-                        showGPSOpenMessage(true);
-                        d.dismiss();
-                    }
-                })
-                .setNegativeButton("Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface d, int id) {
-                            d.cancel();
-                            showGPSOpenMessage(false);
-                        }
-                    });
+                        d.cancel();
+                        showGPSOpenMessage(false);
+                }
+            }
+        );
 
         Dialog dialog = builder.create();
         // 取消 : 按下他地方

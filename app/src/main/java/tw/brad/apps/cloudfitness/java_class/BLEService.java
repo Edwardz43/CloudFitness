@@ -219,7 +219,7 @@ public class BLEService extends Service{
         Log.d("ed43", "disconnect()");
         // 停止搜索
         mClient.stopSearch();
-        if(isBluetoothOpen){
+        //if(isBluetoothOpen){
             if (this.deviceMAC != null) {
                 // 中斷連結
                 Log.d("ed43", "disconnect(deviceMAC)");
@@ -228,7 +228,7 @@ public class BLEService extends Service{
             // 關閉藍芽
             Log.d("ed43", "closeBluetooth()");
             mClient.closeBluetooth();
-        }
+        //}
         // 取消註冊監聽器
         mClient.unregisterConnectStatusListener(deviceMAC, mBleConnectStatusListener);
         mClient.unregisterBluetoothStateListener(mBluetoothStateListener);
@@ -287,6 +287,11 @@ public class BLEService extends Service{
                     Log.d("ed43", "OK");
                 }else if(code == REQUEST_FAILED){
                     Log.d("ed43", "FAILED");
+                    // 寫入失敗 => 看作連結失敗
+                    isConnectionLost = true;
+                    Intent it = new Intent("BleService");
+                    it.putExtra("connectionLost", isConnectionLost);
+                    sendBroadcast(it);
                 }
             }
         });
