@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
     private AccessTokenTracker accessTokenTracker;
     private AccessToken accessToken;
     private FacebookCallback mFBCallback;
+    //
+    private CheckBox remember_me_check;
+    private EditText login_email;
+    private EditText login_password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,17 +161,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Callback registration
+        // 註冊FB Callback
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App code
                 accessToken = loginResult.getAccessToken();
 
-                Log.d("ed43","access token got.");
+                //Log.d("ed43","access token got.");
 
                 //send request and call graph api
-
                 GraphRequest request = GraphRequest.newMeRequest(
                         accessToken,
                         new GraphRequest.GraphJSONObjectCallback() {
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                             //當RESPONSE回來的時候
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-                                //讀出姓名 ID FB個人頁面連結
+                                //讀出ID
                                 String fb_id = object.optString("id");
                                 signInWithFb(fb_id);
                                 Log.d("FB Test", "FB ID : " + fb_id);
@@ -193,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCancel() {
                 // App code
-                Log.d("ed43","CANCEL");
+                Log.d("ed43","FB login CANCEL");
             }
 
             @Override
@@ -208,8 +210,7 @@ public class MainActivity extends AppCompatActivity {
             protected void onCurrentAccessTokenChanged(
                     AccessToken oldAccessToken,
                     AccessToken currentAccessToken) {
-                // Set the access token using
-                // currentAccessToken when it's loaded or set.
+                    // do something
             }
         };
         // If the access token is available already assign it.
@@ -218,12 +219,25 @@ public class MainActivity extends AppCompatActivity {
         // 初始化 DB
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
         db = dbHelper.getReadableDatabase();
+
+        remember_me_check = findViewById(R.id.remember_me_check);
+        login_email = (EditText) findViewById(R.id.login_email);
+        login_password = (EditText) findViewById(R.id.login_password);
+
         // 取得 sharedPreferences
         sharedPref = this.getPreferences(Context.MODE_PRIVATE);
         // 從 sharedPreferences 中取得 reMemberMe 的值  如果沒有 就預設 false
         boolean reMemberMe = sharedPref.getBoolean("rememberMe", false);
         if(reMemberMe){
             //Log.d("ed43", "remember me");
+            remember_me_check.setChecked(true);
+            boolean isSignOut = getIntent().getBooleanExtra("signOut",false);
+            if(!isSignOut){
+                autoLogin();
+            }
+        }else {
+            //Log.d("ed43", "do not remember me");
+            remember_me_check.setChecked(false);
         }
     }
 
@@ -236,10 +250,25 @@ public class MainActivity extends AppCompatActivity {
                 bluetoothAdapter.isOffloadedScanBatchingSupported();
     }
 
+    // 若使用者有勾選"remember me" 下次開啟APP就會自動登入
+    private void autoLogin(){
+        //Log.d("ed43", "autoLogin");
+        String email = sharedPref.getString("email", null);
+        if(email != null){
+            Log.d("ed43", "autoLogin");
+            User user = User.query(email, db);
+            if(user != null){
+                login_email.setText(email);
+                login_password.setText(user.getPassword());
+                signIn(null);
+            }
+        }else {
+            //Log.d("ed43", "autoLogin no email");
+        }
+    }
+
     //登入
     public void signIn(View view){
-        EditText login_email = (EditText) findViewById(R.id.login_email);
-        EditText login_password = (EditText) findViewById(R.id.login_password);
         String email = login_email.getText().toString();
         String password = login_password.getText().toString();
 
@@ -248,6 +277,10 @@ public class MainActivity extends AppCompatActivity {
             //Log.i("ed43", "confirm user");
             if(confirm_user(email, password)){
                 //Log.i("ed43", "Login Email : " + email);
+                // 每次登入都將email放入
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("email", email);
+                editor.commit();
                 Intent signInIntent = new Intent(this, LastWeightActivity.class);
                 signInIntent.putExtra("email", email);
                 startActivity(signInIntent);

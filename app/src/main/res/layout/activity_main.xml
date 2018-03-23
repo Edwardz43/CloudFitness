@@ -154,6 +154,7 @@
                 android:layout_marginStart="30dp"
                 >
                 <CheckBox
+                    android:id="@+id/remember_me_check"
                     android:onClick="rememberMe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -152,6 +152,7 @@ public class LastWeightActivity extends AppCompatActivity {
         serviceIntent.putExtra("cmd",3);
         startService(serviceIntent);
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("signOut", true);
         startActivity(intent);
         finish();
     }

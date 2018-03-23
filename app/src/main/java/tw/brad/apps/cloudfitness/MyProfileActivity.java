@@ -208,13 +208,13 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
             // 若是第一次用FB登入  會無法設定密碼 導致寫入DB失敗  故先設定一個密碼
             user.setPassword("password");
             boolean b = user.insert(db);
-            Log.d("ed43", "insert : " + b);
+            //Log.d("ed43", "insert : " + b);
         }else {
 
             boolean b = user.update(db);
-            Log.d("ed43", "update : " + b);
+            //Log.d("ed43", "update : " + b);
         }
-        Log.d("ed43", new Gson().toJson(user));
+        //Log.d("ed43", new Gson().toJson(user));
         Intent intent = new Intent(this, LastWeightActivity.class);
         intent.putExtra("user", user);
         startActivity(intent);
