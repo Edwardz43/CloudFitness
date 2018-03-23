@@ -298,9 +298,14 @@ public class MainActivity extends AppCompatActivity {
     // 由FB登入的callback的跳頁
     private void signInWithFb(String fb_id){
         Intent lastWeightIntent = new Intent(getApplicationContext(), LastWeightActivity.class);
-        User user = new User();
-        Long id = Long.parseLong(fb_id);
-        user.setFb_id(id);
+        //用FB ID 到DB搜索 若沒有 就判定為新使用者
+        long id = Long.parseLong(fb_id);
+        User user = User.query(id, db);
+        if(user == null){
+            Log.d("ed43", "user null");
+            user = new User();
+            user.setFb_id(id);
+        }
         lastWeightIntent.putExtra("user", user);
         startActivity(lastWeightIntent);
         finish();

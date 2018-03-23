@@ -226,6 +226,31 @@ public class User implements Serializable {
         return null;
     }
 
+    // CRUD : 查詢User  若有查到 就回傳User物件 否則回傳空值
+    public static User query(long fb_id, SQLiteDatabase db){
+        Cursor cursor = db.query("users", null, "fb_id=" + fb_id, null, null, null, null);
+        User user = new User();
+        while (cursor.moveToNext()){
+            user.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+            user.setEmail(cursor.getString(cursor.getColumnIndex("email")));
+            user.setPassword(cursor.getString(cursor.getColumnIndex("password")));
+            user.setFisrtname(cursor.getString(cursor.getColumnIndex("first_name")));
+            user.setLastname(cursor.getString(cursor.getColumnIndex("last_name")));
+            user.setBirthdate(cursor.getString(cursor.getColumnIndex("birth_date")));
+            user.setHeight_ft(cursor.getString(cursor.getColumnIndex("height_ft")));
+            user.setHeight_in(cursor.getString(cursor.getColumnIndex("height_in")));
+            user.setHeight_cm(cursor.getString(cursor.getColumnIndex("height_cm")));
+            user.setWeight_lb(cursor.getString(cursor.getColumnIndex("weight_lb")));
+            user.setWeight_kg(cursor.getString(cursor.getColumnIndex("weight_kg")));
+            user.setGender(cursor.getString(cursor.getColumnIndex("gender")));
+            user.setUnit_type(cursor.getInt(cursor.getColumnIndex("unit_type")));
+            user.setActivity_level(cursor.getInt(cursor.getColumnIndex("activity_level")));
+            user.setFb_id(cursor.getLong(cursor.getColumnIndex("fb_id")));
+            return user;
+        }
+        return null;
+    }
+
     public static User getSampleUser(SQLiteDatabase db){
         User user = new User();
         user.setEmail("test@test.com");
