@@ -53,7 +53,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         boolean connectionLost = intent.getBooleanExtra("connectionLost",false);
         if(connectionLost){
             // 啟動 跳轉連結錯誤
-            Log.d("ed43", "Receiver Connection Lost");
+            //Log.d("ed43", "Receiver Connection Lost");
             activity.connection_lost();
         }
 

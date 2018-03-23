@@ -79,6 +79,7 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
             isFBNewLogin = true;
             isImperial = true;
             isMale = true;
+            user.setActivity_level(0);
         }else {
             isFBNewLogin = false;
         }

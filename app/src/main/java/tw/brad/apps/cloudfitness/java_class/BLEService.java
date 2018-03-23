@@ -219,17 +219,17 @@ public class BLEService extends Service{
 
     // 與設備中斷連結
     private void disconnect() {
-        Log.d("ed43", "disconnect()");
+        //Log.d("ed43", "disconnect()");
         // 停止搜索
         mClient.stopSearch();
         //if(isBluetoothOpen){
             if (this.deviceMAC != null) {
                 // 中斷連結
-                Log.d("ed43", "disconnect(deviceMAC)");
+                //Log.d("ed43", "disconnect(deviceMAC)");
                 mClient.disconnect(deviceMAC);
             }
             // 關閉藍芽
-            Log.d("ed43", "closeBluetooth()");
+            //Log.d("ed43", "closeBluetooth()");
             mClient.closeBluetooth();
         //}
         // 取消註冊監聽器
@@ -287,9 +287,9 @@ public class BLEService extends Service{
             public void onResponse(int code) {
                 //Log.d("ed43", "write response code : " + code);
                 if (code == REQUEST_SUCCESS) {
-                    Log.d("ed43", "OK");
+                    //Log.d("ed43", "OK");
                 }else if(code == REQUEST_FAILED){
-                    Log.d("ed43", "FAILED");
+                    //Log.d("ed43", "FAILED");
                     // 寫入失敗 => 看作連結失敗
                     isConnectionLost = true;
                     Intent it = new Intent("BleService");
@@ -302,7 +302,7 @@ public class BLEService extends Service{
 
     // 登出 : 重啟測試
     private void signOut() {
-        Log.d("ed43", "Sign Out");
+        //Log.d("ed43", "Sign Out");
         write(signOutResponse);
     }
 
@@ -405,7 +405,7 @@ public class BLEService extends Service{
     // 停止服務
     @Override
     public void onDestroy() {
-        Log.d("ed43", "service onDestroy");
+        //Log.d("ed43", "service onDestroy");
         disconnect();
         stopSelf();
     }

@@ -25,11 +25,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
+
+import java.util.Arrays;
 
 import tw.brad.apps.cloudfitness.java_class.BLEService;
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
@@ -48,6 +62,12 @@ public class MainActivity extends AppCompatActivity {
     // 藍芽支援功能相關物件
     BluetoothManager bluetoothManager;
     BluetoothAdapter bluetoothAdapter;
+    // FB登入相關物件
+    private CallbackManager callbackManager;
+    private Button fbLoginButton;
+    private AccessTokenTracker accessTokenTracker;
+    private AccessToken accessToken;
+    private FacebookCallback mFBCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         // 取權限的callback
         if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             // 如果取得正確的權限  才初始化
-            Log.d("ed43", "onRequestPermissionsResult");
+            //Log.d("ed43", "onRequestPermissionsResult");
             init();
         }else {
             // 權限取得失敗
@@ -115,9 +135,85 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     // 初始化
     private void init() {
         //Log.d("ed43", "init()");
+        //FB登入
+        callbackManager = CallbackManager.Factory.create();
+
+        fbLoginButton = (Button) findViewById(R.id.login_button);
+
+        fbLoginButton.setOnClickListener(new Button.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                LoginManager.getInstance().logInWithReadPermissions(MainActivity.this, Arrays.asList("public_profile", "user_friends"));
+            }
+        });
+
+        // Callback registration
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // App code
+                accessToken = loginResult.getAccessToken();
+
+                Log.d("ed43","access token got.");
+
+                //send request and call graph api
+
+                GraphRequest request = GraphRequest.newMeRequest(
+                        accessToken,
+                        new GraphRequest.GraphJSONObjectCallback() {
+
+                            //當RESPONSE回來的時候
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                //讀出姓名 ID FB個人頁面連結
+                                String fb_id = object.optString("id");
+                                signInWithFb(fb_id);
+                                Log.d("FB Test", "FB ID : " + fb_id);
+                            }
+                        });
+
+                //包入你想要得到的資料 送出request
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,link");
+                request.setParameters(parameters);
+                request.executeAsync();
+                //Log.i("FB Test","loginResult : " + loginResult);
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+                Log.d("ed43","CANCEL");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+                Log.d("ed43",exception.toString());
+            }
+        });
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(
+                    AccessToken oldAccessToken,
+                    AccessToken currentAccessToken) {
+                // Set the access token using
+                // currentAccessToken when it's loaded or set.
+            }
+        };
+        // If the access token is available already assign it.
+        accessToken = AccessToken.getCurrentAccessToken();
 
         // 初始化 DB
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
@@ -194,7 +290,20 @@ public class MainActivity extends AppCompatActivity {
 
     //fb登入
     public void fb_login(View view){
+        LoginManager.getInstance().
+                logInWithReadPermissions(this, Arrays.asList("public_profile"));
         Log.i("ed43", "fb_login");
+    }
+
+    // 由FB登入的callback的跳頁
+    private void signInWithFb(String fb_id){
+        Intent lastWeightIntent = new Intent(getApplicationContext(), LastWeightActivity.class);
+        User user = new User();
+        Long id = Long.parseLong(fb_id);
+        user.setFb_id(id);
+        lastWeightIntent.putExtra("user", user);
+        startActivity(lastWeightIntent);
+        finish();
     }
 
     // 改寫按下返回鍵 離開app
@@ -205,6 +314,8 @@ public class MainActivity extends AppCompatActivity {
 
         // 兩次按下返回鍵的間隔時間 < 3秒  就離開app
         if(now - last <= 3 * 1000){
+            accessTokenTracker.stopTracking();
+            LoginManager.getInstance().logOut();
             Intent serviceIntent = new Intent(this, BLEService.class);
             serviceIntent.putExtra("cmd",2);
             startService(serviceIntent);
@@ -221,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
     // 改寫onResume : 每次回到首頁都先檢查GPS是否開啟
     @Override
     public void onResume(){
-        Log.d("ed43", "onResume");
+        //Log.d("ed43", "onResume");
         super.onResume();
         isGpsOPen = gpsStatus(this);
 
@@ -260,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 開啟GPS定位
     public void openGPS() {
-        Log.d("ed43", "openGPS");
+        //Log.d("ed43", "openGPS");
         final AlertDialog.Builder builder =  new AlertDialog.Builder(this);
         final String message = "Do you want open GPS setting to connect scale?";
         builder.setMessage(message).setPositiveButton("OK",

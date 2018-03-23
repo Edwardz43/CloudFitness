@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BLE_Weight_Scale</string>
-    <string name="facebook_app_id">195297047880502</string>
-    <string name="fb_login_protocol_scheme">fb195297047880502</string>
+    <string name="facebook_app_id">186012622187652</string>
+    <string name="fb_login_protocol_scheme">fb186012622187652</string>
     <string name="activity_level">Activity Level</string>
     <string name="gender_male">male</string>
     <string name="gender_female">female</string>

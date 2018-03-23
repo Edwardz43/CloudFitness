@@ -53,7 +53,7 @@ public class HistoricalDataActivity extends AppCompatActivity {
         // 設置子項目header : 月份
         for (String mMonth : mMonths) {
             listDataHeader.add(mMonth);
-            Log.d("ed43", mMonth);
+            //Log.d("ed43", mMonth);
         }
 
         // 測試資料 : 11月
@@ -108,7 +108,7 @@ public class HistoricalDataActivity extends AppCompatActivity {
         listDataChild.put(listDataHeader.get(0), nov);
         listDataChild.put(listDataHeader.get(1), dec);
         listDataChild.put(listDataHeader.get(2), jan);
-        Log.d("ed43", new Gson().toJson(listDataChild));
+        //Log.d("ed43", new Gson().toJson(listDataChild));
     }
 
     //按鈕 : 返回鍵

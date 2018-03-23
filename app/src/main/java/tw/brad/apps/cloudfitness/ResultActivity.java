@@ -73,7 +73,7 @@ public class ResultActivity extends AppCompatActivity {
         // 搜索到的設備列表
         device_List = new ArrayList();
 
-        // 對話框
+        // 對話框builder
         dialog_list = new AlertDialog.Builder(this);
 
         // 自訂監聽器 : 監聽使用者在對話框上所選的選項
@@ -115,7 +115,7 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void startBLEService() {
-        Log.d("ed43","startBLEService()");
+        //Log.d("ed43","startBLEService()");
         Intent intent = new Intent(this, BLEService.class);
         intent.putExtra("cmd", 0);
         startService(intent);
@@ -126,7 +126,7 @@ public class ResultActivity extends AppCompatActivity {
         // 如果Record物件非空值 就寫入資料庫並離開
         if(record != null){
             boolean b = record.insert(db);
-            Log.d("ed43", "save : " + b);
+            //Log.d("ed43", "save : " + b);
             finish();
         }
     }
@@ -238,7 +238,6 @@ public class ResultActivity extends AppCompatActivity {
             dialog_list.show();
             isDialogShow = true;
         }
-
     }
 
     // 設置使用者個人資料 將資料改成byte[]回傳
