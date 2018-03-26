@@ -1,5 +1,7 @@
 package tw.brad.apps.cloudfitness;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -11,12 +13,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +32,8 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
     private SQLiteDatabase db;
     private boolean isFBNewLogin, isMale, isImperial;
     private Button male, female, imperial, metric;
-    private EditText email, firstname, lastname, birthdate, height_ft, height_in, height_cm;
+    private EditText email, firstname, lastname, height_ft, height_in, height_cm;
+    private TextView birthdate;
     private Integer activity_level;
     private Spinner spinner;
     private final static int IMPERIAL = 0;
@@ -87,6 +91,26 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
 
         //初始化下拉選單
         init_spinner();
+    }
+
+    // 設置生日 : 採用滾輪式的date picker
+    public void pick_birthday(View view){
+        String[] birthday = user.getBirthdate().split("/");
+        int mYear = Integer.parseInt(birthday[2]);
+        int mMonth = Integer.parseInt(birthday[0]) - 1;
+        int mDay = Integer.parseInt(birthday[1]);
+        final TextView birth_date = findViewById(R.id.profile_birthDate);
+        new DatePickerDialog(
+                this, AlertDialog.THEME_HOLO_LIGHT, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                birth_date.setText(setDateFormat(year, month, dayOfMonth));
+            }
+        }, mYear, mMonth, mDay).show();
+    }
+
+    private String setDateFormat(int mYear, int mMonth, int mDay){
+        return (mMonth +1 ) + "/" + mDay+ "/" + mYear;
     }
 
     private void setMyProfile(){

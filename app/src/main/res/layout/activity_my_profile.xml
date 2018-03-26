@@ -45,6 +45,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 android:hint="Email (Username)"
+                android:inputType="textEmailAddress"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 />
@@ -66,6 +67,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:hint="First Name"
+                android:inputType="textPersonName"
                 android:background="@drawable/edit_text_border"
                 />
         </RelativeLayout>
@@ -87,6 +89,7 @@
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 android:hint="Last Name"
+                android:inputType="textPersonName"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 />
@@ -97,16 +100,17 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             >
-            <EditText
+            <TextView
                 android:id="@+id/profile_birthDate"
                 android:layout_centerInParent="true"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="17"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 android:paddingStart="5dp"
+                android:textSize="18dp"
                 android:hint="Birthdate MM/DD/YYYY"
+                android:onClick="pick_birthday"
                 android:background="@drawable/edit_text_border"
                 />
         </RelativeLayout>

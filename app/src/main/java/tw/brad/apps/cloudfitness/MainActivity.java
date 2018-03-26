@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             //Log.d("ed43", "remember me");
             remember_me_check.setChecked(true);
             boolean isSignOut = getIntent().getBooleanExtra("signOut",false);
-            if(!isSignOut){
+            if(!isSignOut && gpsStatus(this)){
                 autoLogin();
             }
         }else {
@@ -370,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
     // 改寫onResume : 每次回到首頁都先檢查GPS是否開啟
     @Override
     public void onResume(){
-        //Log.d("ed43", "onResume");
+        Log.d("ed43", "onResume");
         super.onResume();
         isGpsOPen = gpsStatus(this);
 

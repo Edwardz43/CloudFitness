@@ -32,7 +32,7 @@ public class LastWeightActivity extends AppCompatActivity {
     private MyDBHelper dbHelper;
     private SQLiteDatabase db;
     private boolean isFbLogin;
-    private Button weight_btn, graph_btn, hist_btn, signout_btn, myProfile_btn;
+    private Button weight_btn, graph_btn, hist_btn, signout_btn;
     // 使用者物件
     private User user;
     // 物件 : 測量記錄

@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -182,13 +183,45 @@ public class ResultActivity extends AppCompatActivity {
         startService(serviceIntent);
     }
 
-    // 吐司對話框 : 引導使用者操作
+    // 對話框 : 引導使用者操作
     public void alertMessage(int option){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if(option == 0){
-            Toast.makeText(this, R.string.stand_on_scale, Toast.LENGTH_LONG).show();
+            builder.setMessage(R.string.stand_on_scale);
+            //Toast.makeText(this, R.string.stand_on_scale, Toast.LENGTH_LONG).show();
         }else if(option == 1){
-            Toast.makeText(this, R.string.leave_scale, Toast.LENGTH_LONG).show();
+            builder.setMessage(R.string.leave_scale);
+            //Toast.makeText(this, R.string.leave_scale, Toast.LENGTH_LONG).show();
         }
+
+        final AlertDialog dialog = builder.create();
+        builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
+        // 設置5秒之後 自動關閉提示對話框
+        final Handler handler  = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+            }
+        };
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                handler.removeCallbacks(runnable);
+            }
+        });
+
+        handler.postDelayed(runnable, 5000);
     }
 
     // 選擇設備 : 會收到服務傳來的設備List

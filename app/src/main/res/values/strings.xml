@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BLE_Weight_Scale</string>
+    <string name="app_name">CloudFitness</string>
     <string name="facebook_app_id">186012622187652</string>
     <string name="fb_login_protocol_scheme">fb186012622187652</string>
     <string name="activity_level">Activity Level</string>

@@ -1,5 +1,7 @@
 package tw.brad.apps.cloudfitness;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,12 +12,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +67,26 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
         //初始化下拉選單
         init_spinner();
+    }
+
+    // 設置生日 : 採用滾輪式的date picker
+    public void pick_date(View view){
+        Calendar calendar = Calendar.getInstance();
+        int mYear = calendar.get(Calendar.YEAR);
+        final int mMonth = calendar.get(Calendar.MONTH);
+        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        final TextView birth_date = findViewById(R.id.user_birthDate);
+        new DatePickerDialog(
+                this, AlertDialog.THEME_HOLO_LIGHT, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                birth_date.setText(setDateFormat(year, month, dayOfMonth));
+            }
+        }, mYear, mMonth, mDay).show();
+    }
+
+    private String setDateFormat(int mYear, int mMonth, int mDay){
+        return (mMonth +1 ) + "/" + mDay+ "/" + mYear;
     }
 
     // 設置性別按鈕 : 男性
@@ -133,6 +158,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     // 按下 back按鍵 回到首頁
     public void back(View view){
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("signOut", true);
         startActivity(intent);
         finish();
     }
@@ -144,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         this.lastName = editableToString(findViewById(R.id.user_lastName));
         this.password = editableToString(findViewById(R.id.user_password));
         this.confirmPassword = editableToString(findViewById(R.id.confirm_password));
-        this.birthdate = editableToString(findViewById(R.id.user_birthDate));
+        this.birthdate = (String)((TextView)findViewById(R.id.user_birthDate)).getText();
 
         // 身高公制/英制顯示的轉換
         // 英制

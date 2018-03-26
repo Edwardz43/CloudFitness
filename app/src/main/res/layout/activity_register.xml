@@ -43,6 +43,7 @@
                 >
 
                 <EditText
+                    android:inputType="textEmailAddress"
                     android:id="@+id/user_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -118,6 +119,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:hint="First Name"
+                    android:inputType="textPersonName"
                     android:background="@drawable/edit_text_border"
                     />
             </RelativeLayout>
@@ -139,6 +141,7 @@
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="30dp"
                     android:hint="Last Name"
+                    android:inputType="textPersonName"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     />
@@ -149,12 +152,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 >
-                <EditText
+                <TextView
+                    android:onClick="pick_date"
                     android:id="@+id/user_birthDate"
                     android:layout_centerInParent="true"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="17"
+                    android:textSize="18dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="30dp"
                     android:paddingStart="5dp"
@@ -254,6 +258,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="Height (ft)"
+                    android:inputType="number"
                     android:background="@drawable/edit_text_border"
                     android:layout_weight="1"
                     android:layout_marginStart="30dp"
@@ -263,6 +268,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint=" (in)"
+                    android:inputType="number"
                     android:layout_weight="1"
                     android:background="@drawable/edit_text_border"
                     android:layout_marginStart="10dp"
@@ -273,6 +279,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="weight (lbs)"
+                    android:inputType="number"
                     android:background="@drawable/edit_text_border"
                     android:layout_weight="1"
                     android:layout_marginEnd="30dp"
@@ -292,6 +299,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="Height (cm)"
+                    android:inputType="number"
                     android:background="@drawable/edit_text_border"
                     android:layout_weight="1"
                     android:layout_marginStart="30dp"
@@ -302,6 +310,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="weight (kg)"
+                    android:inputType="number"
                     android:background="@drawable/edit_text_border"
                     android:layout_weight="1"
                     android:layout_marginEnd="30dp"
@@ -311,7 +320,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
                 >
