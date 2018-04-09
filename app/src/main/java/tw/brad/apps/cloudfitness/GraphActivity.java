@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -35,6 +36,7 @@ import java.util.List;
 import tw.brad.apps.cloudfitness.chart.DayAxisValueFormatter;
 import tw.brad.apps.cloudfitness.chart.MyAxisValueFormatter;
 import tw.brad.apps.cloudfitness.chart.XYMarkerView;
+import tw.brad.apps.cloudfitness.java_class.Algorithm;
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
 import tw.brad.apps.cloudfitness.java_class.data.Record;
 import tw.brad.apps.cloudfitness.java_class.data.User;
@@ -44,7 +46,7 @@ public class GraphActivity extends AppCompatActivity {
     private BarChart mChart;
     private int itemcount = 12;
     private  String[] mSelectedType;
-    protected String[] mYear = new String[] {"Nov", "Dec", "Jan"};//"Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt",
+    protected String[] mYear = new String[] {"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt","Nov", "Dec", "Jan","Feb", "Mar"};
     protected String[] mMonth =
             new String[] {"1-1", "1-3", "1-5", "1-7", "2-1", "2-3", "2-5", "2-7", "3-1", "3-3", "3-5", "3-7", "4-1", "4-3", "4-5", "4-7"};
     protected String[] mWeek = new String[] {"Sat", "Sun", "Mon", "Tue", "Wed", "Thr", "Fri"};
@@ -61,6 +63,7 @@ public class GraphActivity extends AppCompatActivity {
     private List<Record> records;
     private MyDBHelper dbHelper;
     private SQLiteDatabase db;
+    private boolean isImperial;
 
 
     @Override
@@ -95,6 +98,7 @@ public class GraphActivity extends AppCompatActivity {
         db = dbHelper.getReadableDatabase();
         User user = (User) getIntent().getSerializableExtra("user");
         records = Record.query(user.getId(), db);
+        isImperial = user.getUnit_type() == 0 ? true : false;
         //Log.d("ed43", new Gson().toJson(records));
 
         // 初始化圖表
@@ -107,6 +111,7 @@ public class GraphActivity extends AppCompatActivity {
         // 根據按鈕來決定資料呈現 : 日 周 月 年
         switch (mType){
             case DAY:
+                // 測試 : 拿掉最多5筆限制
                 int index = records.size();
                 mSelectedType = new String[index];
                 dataSet = new double[index];
@@ -116,63 +121,73 @@ public class GraphActivity extends AppCompatActivity {
                     String mTime = format.format(records.get(i).getDateTime());
                     mSelectedType[i] = mTime;
                 }
-
-                itemcount = mSelectedType.length;
-                minYAxisValue = (float) setMinYAxisValue(dataSet);
                 break;
 
             case WEEK:
                 mSelectedType = mWeek;
                 dataSet = new double[] {
-                        157.3,
-                        157.6,
-                        157.8,
-                        158.1,
-                        158.3,
-                        158.6,
-                        159.5
+                        115.3,
+                        115.6,
+                        114.8,
+                        115.1,
+                        115.3,
+                        114.6,
+                        114.5
                 };
-                itemcount = mSelectedType.length;
-                minYAxisValue = (float) 157;
                 break;
 
             case MONTH:
                 mSelectedType = mMonth;
                 dataSet = new double[] {
-                        155.3,
-                        155.2,
+                        115.3,
+                        115.2,
                         0,
-                        155.5,
+                        115.5,
                         0,
-                        156.3,
-                        157.1,
-                        156.3,
-                        156.5,
-                        157.1,
-                        157.9,
-                        157.5,
-                        157.3,
-                        157.8,
-                        158.3,
-                        159.5
+                        116.3,
+                        116.1,
+                        116.3,
+                        115.5,
+                        116.1,
+                        114.9,
+                        115.5,
+                        115.3,
+                        114.8,
+                        115.3,
+                        115.5
                 };
-                itemcount = mSelectedType.length;
-                minYAxisValue = (float) 155;
                 break;
 
             case YEAR:
                 mSelectedType = mYear;
-                dataSet = new double[] {156, 156.2, 157.1};
-                itemcount = mSelectedType.length;
-                minYAxisValue = (float) 155;
+                dataSet = new double[] {
+                        115.4,
+                        116.2,
+                        116.1,
+                        115.5,
+                        115.1,
+                        114.9,
+                        115.5,
+                        116.3,
+                        115.8,
+                        115.3,
+                        115.5,
+                        116.2
+                };
                 break;
             default:
                 mType = DAY;
                 mSelectedType = mDay;
-                dataSet = new double[] {158.5, 158.4, 159};
-                itemcount = mSelectedType.length;
-                minYAxisValue = (float) 158;
+                dataSet = new double[] {115.5, 115.4, 116};
         }
+
+        itemcount = mSelectedType.length;
+        if(isImperial){
+            minYAxisValue = (float) Algorithm.kgToPound(setMinYAxisValue(dataSet));
+        }else {
+            minYAxisValue = (float) setMinYAxisValue(dataSet);
+        }
+
         mChart = (BarChart) findViewById(R.id.chart);
         mChart.setDrawBarShadow(false);
         mChart.setDrawValueAboveBar(true);
@@ -239,7 +254,13 @@ public class GraphActivity extends AppCompatActivity {
     private void setData(int count, float range) {
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
         for (int i = 0 ; i < count; i++) {
-            yVals1.add(new BarEntry(i, (float)dataSet[i]));
+            double mWeight = 0.0;
+            if(isImperial){
+                mWeight = Algorithm.kgToPound(dataSet[i]);
+            }else {
+                mWeight = dataSet[i];
+            }
+            yVals1.add(new BarEntry(i, (float)mWeight));
         }
         BarDataSet set1;
         if (mChart.getData() != null &&
@@ -334,6 +355,8 @@ public class GraphActivity extends AppCompatActivity {
         //排序後 取出最小值
         double[] tmp = mData.clone();
         Arrays.sort(tmp);
-        return mData[tmp.length - 1] - 1;
+        double result = mData[0] - 1;
+        //Toast.makeText(this, "" + result, Toast.LENGTH_SHORT).show();
+        return result;
     }
 }

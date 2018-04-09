@@ -125,7 +125,7 @@ public class ResultActivity extends AppCompatActivity {
     // 按下save按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void save(View view){
         // 如果Record物件非空值 就寫入資料庫並離開
-        setResult(new double[]{Math.random() + 115, 30.5, 46.8, 70.8, 15.3, 15, 34.5});
+        //setResult(new double[]{Math.random() + 115, 30.5, 46.8, 70.8, 15.3, 15, 34.5});
         if(record != null){
             boolean b = record.insert(db);
             Log.d("ed43", "save : " + b);
@@ -138,7 +138,11 @@ public class ResultActivity extends AppCompatActivity {
     // 按下discard按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void discard(View view){
         //Log.d("ed43", "discord");
-        finish();
+        if(record != null){
+            boolean b = record.insert(db);
+            Log.d("ed43", "save : " + b);
+            finish();
+        }
     }
 
     // 搜索 : 當廣播接收器收到藍芽已開啟 便會啟動搜索

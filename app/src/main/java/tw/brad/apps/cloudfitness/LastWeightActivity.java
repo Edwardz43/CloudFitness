@@ -134,9 +134,13 @@ public class LastWeightActivity extends AppCompatActivity {
 
     // 跳頁 : 圖表顯示
     public void graph(View view){
-        Intent intent = new Intent(this, GraphActivity.class);
-        intent.putExtra("user", user);
-        startActivity(intent);
+        if (records != null && records.size() > 0){
+            Intent intent = new Intent(this, GraphActivity.class);
+            intent.putExtra("user", user);
+            startActivity(intent);
+        }else {
+            Toast.makeText(this, "Please at least measure once", Toast.LENGTH_LONG).show();
+        }
     }
 
     // 跳頁 : 歷史紀錄
