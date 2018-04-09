@@ -111,14 +111,16 @@ public class GraphActivity extends AppCompatActivity {
         // 根據按鈕來決定資料呈現 : 日 周 月 年
         switch (mType){
             case DAY:
-                // 測試 : 拿掉最多5筆限制
-                int index = records.size();
+                // 測試 : 拿掉最多5筆限制 最多7筆(last 7)
+                int index = records.size() > 7 ? 7 : records.size();
                 mSelectedType = new String[index];
                 dataSet = new double[index];
                 for (int i = 0; i < index; i ++){
-                    dataSet[i] = records.get(i).getWeight();
+                    int n = records.size() - index + i;
+                    //Log.d("ed43", "" + n);
+                    dataSet[i] = records.get(n).getWeight();
                     DateFormat format = new SimpleDateFormat("HH:mm");
-                    String mTime = format.format(records.get(i).getDateTime());
+                    String mTime = format.format(records.get(n).getDateTime());
                     mSelectedType[i] = mTime;
                 }
                 break;
