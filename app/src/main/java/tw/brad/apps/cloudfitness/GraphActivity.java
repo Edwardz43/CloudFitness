@@ -269,6 +269,23 @@ public class GraphActivity extends AppCompatActivity {
                 mChart.getData().getDataSetCount() > 0) {
             set1 = (BarDataSet) mChart.getData().getDataSetByIndex(0);
             set1.setValues(yVals1);
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            dataSets.add(set1);
+            BarData data = new BarData(dataSets);
+            data.setValueTextSize(10f);
+            data.setValueTypeface(mTfLight);
+            // 如果資料太少 為了美觀  把Bar的寬度調低
+            if(itemcount < 4){
+                data.setBarWidth(0.5f);
+            }
+            data.setValueFormatter(new IValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                    DecimalFormat mFormat = new DecimalFormat("##.0");
+                    return mFormat.format(value);
+                }
+            });
+            mChart.setData(data);
             mChart.getData().notifyDataChanged();
             mChart.notifyDataSetChanged();
         } else {
@@ -281,7 +298,10 @@ public class GraphActivity extends AppCompatActivity {
             BarData data = new BarData(dataSets);
             data.setValueTextSize(10f);
             data.setValueTypeface(mTfLight);
-            data.setBarWidth(0.9f);
+            // 如果資料太少 為了美觀  把Bar的寬度調低
+            if(itemcount < 4){
+                data.setBarWidth(0.5f);
+            }
             data.setValueFormatter(new IValueFormatter() {
                 @Override
                 public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
