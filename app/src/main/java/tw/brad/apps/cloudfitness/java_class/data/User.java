@@ -3,8 +3,13 @@ package tw.brad.apps.cloudfitness.java_class.data;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by EdLo on 2018/3/15.
@@ -269,5 +274,32 @@ public class User implements Serializable {
         user.setFb_id(0l);
         user.insert(db);
         return user;
+    }
+
+    // CRUD : 查詢所有Record 回傳Record List
+    public static List<User> query(SQLiteDatabase db){
+        List<User> users = new ArrayList<>();
+        Cursor cursor = db.query("users", null, null, null, null, null, null);
+        while (cursor.moveToNext()){
+            User user = new User();
+            user.setId(cursor.getLong(cursor.getColumnIndex("_id")));
+            user.setEmail(cursor.getString(cursor.getColumnIndex("email")));
+            user.setPassword(cursor.getString(cursor.getColumnIndex("password")));
+            user.setFisrtname(cursor.getString(cursor.getColumnIndex("first_name")));
+            user.setLastname(cursor.getString(cursor.getColumnIndex("last_name")));
+            user.setBirthdate(cursor.getString(cursor.getColumnIndex("birth_date")));
+            user.setHeight_ft(cursor.getString(cursor.getColumnIndex("height_ft")));
+            user.setHeight_in(cursor.getString(cursor.getColumnIndex("height_in")));
+            user.setHeight_cm(cursor.getString(cursor.getColumnIndex("height_cm")));
+            user.setWeight_lb(cursor.getString(cursor.getColumnIndex("weight_lb")));
+            user.setWeight_kg(cursor.getString(cursor.getColumnIndex("weight_kg")));
+            user.setGender(cursor.getString(cursor.getColumnIndex("gender")));
+            user.setUnit_type(cursor.getInt(cursor.getColumnIndex("unit_type")));
+            user.setActivity_level(cursor.getInt(cursor.getColumnIndex("activity_level")));
+            user.setFb_id(cursor.getLong(cursor.getColumnIndex("fb_id")));
+            Log.d("ed43", "db user : "+new Gson().toJson(user));
+            users.add(user);
+        }
+        return users;
     }
 }

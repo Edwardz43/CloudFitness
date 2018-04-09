@@ -44,6 +44,7 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.List;
 
 import tw.brad.apps.cloudfitness.java_class.BLEService;
 import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                                 //讀出ID
                                 String fb_id = object.optString("id");
                                 signInWithFb(fb_id);
-                                Log.d("FB Test", "FB ID : " + fb_id);
+                                //Log.d("ed43", "FB ID : " + fb_id);
                             }
                         });
 
@@ -220,6 +221,9 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
         db = dbHelper.getReadableDatabase();
 
+//        List<User> users = User.query(db);
+//        Log.d("ed43", new Gson().toJson(users));
+
         remember_me_check = findViewById(R.id.remember_me_check);
         login_email = (EditText) findViewById(R.id.login_email);
         login_password = (EditText) findViewById(R.id.login_password);
@@ -255,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         //Log.d("ed43", "autoLogin");
         String email = sharedPref.getString("email", null);
         if(email != null){
-            Log.d("ed43", "autoLogin");
+            //Log.d("ed43", "autoLogin");
             User user = User.query(email, db);
             if(user != null){
                 login_email.setText(email);
@@ -325,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
     public void fb_login(View view){
         LoginManager.getInstance().
                 logInWithReadPermissions(this, Arrays.asList("public_profile"));
-        Log.i("ed43", "fb_login");
+        //Log.i("ed43", "fb_login");
     }
 
     // 由FB登入的callback的跳頁
@@ -335,9 +339,14 @@ public class MainActivity extends AppCompatActivity {
         long id = Long.parseLong(fb_id);
         User user = User.query(id, db);
         if(user == null){
-            Log.d("ed43", "user null");
+            //Log.d("ed43", "user null");
             user = new User();
             user.setFb_id(id);
+        }else {
+            //Log.d("ed43", "user not null");
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("email", user.getEmail());
+            editor.commit();
         }
         lastWeightIntent.putExtra("user", user);
         startActivity(lastWeightIntent);
@@ -370,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
     // 改寫onResume : 每次回到首頁都先檢查GPS是否開啟
     @Override
     public void onResume(){
-        Log.d("ed43", "onResume");
+        //Log.d("ed43", "onResume");
         super.onResume();
         isGpsOPen = gpsStatus(this);
 

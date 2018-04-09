@@ -125,11 +125,14 @@ public class ResultActivity extends AppCompatActivity {
     // 按下save按鍵 紀錄測量資料  並返回到 LastWeightActivity
     public void save(View view){
         // 如果Record物件非空值 就寫入資料庫並離開
+        setResult(new double[]{Math.random() + 115, 30.5, 46.8, 70.8, 15.3, 15, 34.5});
         if(record != null){
             boolean b = record.insert(db);
-            //Log.d("ed43", "save : " + b);
+            Log.d("ed43", "save : " + b);
             finish();
         }
+        /*List<Record> records = Record.query(user.getId(), db);
+        Log.d("ed43", new Gson().toJson(records));*/
     }
 
     // 按下discard按鍵 紀錄測量資料  並返回到 LastWeightActivity
@@ -329,7 +332,7 @@ public class ResultActivity extends AppCompatActivity {
             water.setText("" + data[2]+"%");
             v_fat.setText("" + (int)data[5]);
             bmi.setText("" + data[6]);
-            alertMessage(1);
+            //alertMessage(1);
         }
     }
 

@@ -1,5 +1,6 @@
 package tw.brad.apps.cloudfitness;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
@@ -24,19 +25,24 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.gson.Gson;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import tw.brad.apps.cloudfitness.chart.DayAxisValueFormatter;
 import tw.brad.apps.cloudfitness.chart.MyAxisValueFormatter;
 import tw.brad.apps.cloudfitness.chart.XYMarkerView;
+import tw.brad.apps.cloudfitness.java_class.data.MyDBHelper;
+import tw.brad.apps.cloudfitness.java_class.data.Record;
+import tw.brad.apps.cloudfitness.java_class.data.User;
 
 
 public class GraphActivity extends AppCompatActivity {
     private BarChart mChart;
     private int itemcount = 12;
-    private int DATA_COUNT = 5;
     private  String[] mSelectedType;
     protected String[] mYear = new String[] {"Nov", "Dec", "Jan"};//"Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt",
     protected String[] mMonth =
@@ -52,6 +58,9 @@ public class GraphActivity extends AppCompatActivity {
     private final static String YEAR = "year";
     private Button btnDay, btnWeek, btnMonth, btnYear;
     private List<Button> buttonList;
+    private List<Record> records;
+    private MyDBHelper dbHelper;
+    private SQLiteDatabase db;
 
 
     @Override
@@ -81,6 +90,13 @@ public class GraphActivity extends AppCompatActivity {
         // 預設顯示 : 日資料
         mType = DAY;
 
+        // 初始化 DB
+        dbHelper = new MyDBHelper(this, MyDBHelper.dbN_ame, null, 1);
+        db = dbHelper.getReadableDatabase();
+        User user = (User) getIntent().getSerializableExtra("user");
+        records = Record.query(user.getId(), db);
+        //Log.d("ed43", new Gson().toJson(records));
+
         // 初始化圖表
         initChart();
     }
@@ -91,10 +107,18 @@ public class GraphActivity extends AppCompatActivity {
         // 根據按鈕來決定資料呈現 : 日 周 月 年
         switch (mType){
             case DAY:
-                mSelectedType = mDay;
-                dataSet = new double[] {158.5, 158.4, 159};
+                int index = records.size();
+                mSelectedType = new String[index];
+                dataSet = new double[index];
+                for (int i = 0; i < index; i ++){
+                    dataSet[i] = records.get(i).getWeight();
+                    DateFormat format = new SimpleDateFormat("HH:mm");
+                    String mTime = format.format(records.get(i).getDateTime());
+                    mSelectedType[i] = mTime;
+                }
+
                 itemcount = mSelectedType.length;
-                minYAxisValue = (float) 158;
+                minYAxisValue = (float) setMinYAxisValue(dataSet);
                 break;
 
             case WEEK:
@@ -149,8 +173,6 @@ public class GraphActivity extends AppCompatActivity {
                 itemcount = mSelectedType.length;
                 minYAxisValue = (float) 158;
         }
-
-
         mChart = (BarChart) findViewById(R.id.chart);
         mChart.setDrawBarShadow(false);
         mChart.setDrawValueAboveBar(true);
@@ -307,9 +329,11 @@ public class GraphActivity extends AppCompatActivity {
 
 
     // 設定Y軸顯示的最小值
-    private float setMinYAxisValue(double[] mData){
+    private double setMinYAxisValue(double[] mData){
         //TODO
-        //排序後 取出最小值  目前暫時回傳0
-        return 0f;
+        //排序後 取出最小值
+        double[] tmp = mData.clone();
+        Arrays.sort(tmp);
+        return mData[tmp.length - 1] - 1;
     }
 }

@@ -163,8 +163,8 @@ public class Record implements Serializable {
     public static List<Record> query(long user_id, SQLiteDatabase db){
         List<Record> records = new ArrayList<>();
         Cursor cursor = db.query("record", null, "user_id=" + user_id, null, null, null, null);
-        Record record = new Record();
         while (cursor.moveToNext()){
+            Record record = new Record();
             record.setId(cursor.getLong(cursor.getColumnIndex("_id")));
             record.setDateTime(cursor.getLong(cursor.getColumnIndex("datetime")));
             record.setWeight(cursor.getDouble(cursor.getColumnIndex("weight")));

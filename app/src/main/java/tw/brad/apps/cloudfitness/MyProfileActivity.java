@@ -20,6 +20,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,10 +97,22 @@ public class MyProfileActivity extends AppCompatActivity implements AdapterView.
 
     // 設置生日 : 採用滾輪式的date picker
     public void pick_birthday(View view){
-        String[] birthday = user.getBirthdate().split("/");
-        int mYear = Integer.parseInt(birthday[2]);
-        int mMonth = Integer.parseInt(birthday[0]) - 1;
-        int mDay = Integer.parseInt(birthday[1]);
+        String[] birthday = new String[3];
+        int mYear = 0;
+        int mMonth = 0;
+        int mDay = 0;
+        if(user.getBirthdate() != null){
+            birthday = user.getBirthdate().split("/");
+            mYear = Integer.parseInt(birthday[2]);
+            mMonth = Integer.parseInt(birthday[0]) - 1;
+            mDay = Integer.parseInt(birthday[1]);
+        }else {
+            Calendar calendar = Calendar.getInstance();
+            mYear = calendar.get(Calendar.YEAR);
+            mMonth = calendar.get(Calendar.MONTH);
+            mDay = calendar.get(Calendar.DAY_OF_MONTH);
+        }
+
         final TextView birth_date = findViewById(R.id.profile_birthDate);
         new DatePickerDialog(
                 this, AlertDialog.THEME_HOLO_LIGHT, new DatePickerDialog.OnDateSetListener() {

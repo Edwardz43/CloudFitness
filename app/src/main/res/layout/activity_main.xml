@@ -60,6 +60,7 @@
                 android:background="@drawable/edit_text_border"
                 android:ems="10"
                 android:hint="Email"
+                android:inputType="textEmailAddress"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:layout_weight="3"
